@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+
+:root {
+    --color-primary: #00A4A6;
+    --color-primarytransparent: #00A4A610;
+    --color-default: white;
+    --color-secondary: #2F2F2F;
+    --bg-primary: #00A4A6;
+    --bg-default: white;
+    /* default value */
+    --bg-secondary: #f0fdf4;
+}
+
+
+/* Text Related custom color css */
+.text-primary {
+    color: var(--color-primary);
+}
+
+.text-default {
+    color: var(--color-default);
+}
+
+.text-secondary {
+    color: var(--color-secondary);
+}
+
+/* Bg related custom color css */
+
+.bg-primary {
+    background-color: var(--color-primary);
+}
+
+.bg-primarytransparent {
+    background-color: var(--color-primarytransparent);
+}
+
+.bg-secondary {
+    background-color: var(--bg-secondary);
+}
+
+.bg-default {
+    background-color: var(--color-default);
+}
+
+
+
+/* =================================== Smooth Scrolling========================================== */
+html {
+    scroll-behavior: smooth;
+}
+
+
+
+
+/* Thin scrollbar utility */
+.thin-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #c7c7c7 transparent;
+}
+
+.thin-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.thin-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.thin-scroll::-webkit-scrollbar-thumb {
+    background-color: #c7c7c7;
+    border-radius: 9999px;
+}
