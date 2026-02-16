@@ -332,7 +332,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
-    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'xls', 'xlsx', 'csv', 'doc', 'docx'];
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'xls', 'xlsx', 'csv', 'doc', 'docx','pdf'];
     const maxSize = 10 * 1024 * 1024; // 10MB
 
     const validFiles = files.filter(file => {
@@ -555,7 +555,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
                     ref={fileInputRef}
                     type="file"
                     multiple
-                    accept=".jpg,.jpeg,.png,.gif,.webp,.svg,.xls,.xlsx,.csv,.doc,.docx"
+                    accept=".jpg,.jpeg,.png,.gif,.webp,.svg,.xls,.xlsx,.csv,.doc,.docx,.pdf"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
