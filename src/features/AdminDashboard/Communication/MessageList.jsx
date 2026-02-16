@@ -32,7 +32,8 @@ const MessageList = ({
     const lastScrollButtonStateRef = useRef(false);
     const isSelectingRef = useRef(false);
     const navigate = useNavigate();
-
+    console.log("Path==========================================", path, roomType)
+    const isChartingAI = roomType === "ai_charting";
     // Deduplicate messages by id to avoid duplicate keys
     const uniqueMessages = useMemo(() => {
         const map = new Map();
@@ -402,7 +403,7 @@ const MessageList = ({
                         })}
                     </div>
                     {/* ===================================== Like /Dislike reactions ========================= */}
-                    {isAI && msg?.reactions && (
+                    {isAI && !isChartingAI && msg?.reactions && (
                         <div className="flex gap-3 mt-2 pt-2 border-t" style={{ borderTopColor: '#d8b4fe' }}>
                             <div className="flex items-center gap-1 text-xs">
                                 <FiThumbsUp

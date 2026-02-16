@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { FiUser, FiMoreVertical, FiChevronDown } from "react-icons/fi"
+import { useQuery, useMutation } from "@tanstack/react-query"
+import { FiUser, FiMoreVertical, FiChevronDown, FiTrash2 } from "react-icons/fi"
 import axiosApi from "../../service/axiosInstance"
 import { base_URL, getAuthData } from "../../config/Config"
+import { toast } from "react-toastify"
+import { queryClient } from "../../main"
 
 const UploadedDocuments = () => {
   const [documents, setDocuments] = useState([])
@@ -19,6 +21,22 @@ const UploadedDocuments = () => {
       const response = await axiosApi.get("/api/v1/mytrainingrooms/docs/")
       console.log("[UploadedDocuments] API data:", response.data)
       return response.data
+    },
+  })
+
+  // Delete document mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (fileId) => {
+      const response = await axiosApi.delete(`/api/v1/mytrainingrooms/docs/${fileId}/delete/`)
+      return response.data
+    },
+    onSuccess: () => {
+      toast.success("Document deleted successfully")
+      queryClient.invalidateQueries(["aiTrainingDocs"])
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Failed to delete document")
+      console.error("[UploadedDocuments] Delete error:", error)
     },
   })
 
@@ -82,6 +100,15 @@ const UploadedDocuments = () => {
   const handleAction = (action, document) => {
     console.log("[v0] Action triggered:", action, "for document:", document)
     // Add your logic here - could be edit, delete, download, etc.
+  }
+
+  // Handle delete document
+  const handleDelete = async (document) => {
+    const confirmed = window.confirm(`Are you sure you want to delete "${document.name}"?`)
+    if (confirmed) {
+      console.log("[UploadedDocuments] Deleting document:", document)
+      deleteMutation.mutate(document.id)
+    }
   }
 
   // Get role badge color
@@ -148,7 +175,7 @@ const UploadedDocuments = () => {
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Uploaded Date</th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Uploaded By</th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">View Details</th>
-              {/* <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th> */}
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -182,14 +209,16 @@ const UploadedDocuments = () => {
                     </button>
                   </td>
 
-                  {/* <td className="px-6 py-4 text-sm">
+                  <td className="px-6 py-4 text-sm">
                     <button
-                      onClick={() => handleAction("menu", document)}
-                      className="p-1 hover:bg-gray-200 rounded transition-colors"
+                      onClick={() => handleDelete(document)}
+                      disabled={deleteMutation.isPending}
+                      className="p-2 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Delete document"
                     >
-                      <FiMoreVertical size={18} className="text-gray-600" />
+                      <FiTrash2 size={18} className="text-red-600" />
                     </button>
-                  </td> */}
+                  </td>
 
                 </tr>
               ))
