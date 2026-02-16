@@ -51,7 +51,7 @@ const AiTrainingChat = () => {
                 if (!newMessage || !newMessage.id) return;
 
                 console.log("[AiTrainingChat] New message processed:", newMessage)
-                
+
                 // If AI message received, stop typing indicator
                 if (newMessage.is_ai) {
                     setIsAiTyping(false)
@@ -147,9 +147,9 @@ const AiTrainingChat = () => {
             const response = await axiosApi.post(`/api/v1/messages/${messageId}/react/`, {
                 reaction: reaction // "like" or "dislike"
             })
-            
+
             console.log("✅ Reaction successful:", response?.status, response?.data)
-            
+
         } catch (err) {
             console.error("❌ Reaction failed:", err?.response?.status, err?.response?.data || err?.message)
             // Revert state on error
@@ -234,7 +234,8 @@ const AiTrainingChat = () => {
 
                                         </div>
                                         <p className="text-xs text-gray-500 mt-1">{msg.timestamp}</p>
-                                        {msg.sender === "ai" && (
+                                        {/* ======================================== Like /Dislike off for Ai training============================= */}
+                                        {/* {msg.sender === "ai" && (
                                             <div className="flex gap-2 mt-2">
                                                 <button
                                                     onClick={() => handleReaction(msg.id, "like")}
@@ -259,12 +260,12 @@ const AiTrainingChat = () => {
                                                     <FiThumbsDown size={14} />
                                                 </button>
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
                                 </div>
                             </div>
                         ))}
-                        
+
                         {/* AI Typing Indicator */}
                         {isAiTyping && (
                             <div className="flex justify-start">
@@ -287,7 +288,7 @@ const AiTrainingChat = () => {
                                 </div>
                             </div>
                         )}
-                        
+
                         <div ref={chatEndRef} />
                     </>
                 )}
@@ -305,8 +306,8 @@ const AiTrainingChat = () => {
                     className={`flex-1 bg-transparent outline-none text-gray-900 placeholder-gray-500 ${isAiTyping || isSending ? 'cursor-not-allowed opacity-60' : ''}`}
                 />
 
-                <button 
-                    onClick={handleSendMessage} 
+                <button
+                    onClick={handleSendMessage}
                     disabled={isAiTyping || isSending || !messageInput.trim()}
                     className={`text-teal-500 hover:text-teal-600 transition-colors ${(isAiTyping || isSending || !messageInput.trim()) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >

@@ -385,7 +385,7 @@ const Communication = () => {
                                             <button
                                                 key={chat.room_id}
                                                 onClick={() => handleChatSelect(chat)}
-                                                className={`flex items-center gap-3 w-full p-2 rounded-lg text-left hover:bg-gray-100 transition max-h-[100px] overflow-hidden ${selectedChat?.room_id === chat.room_id ? "bg-gray-200" : ""
+                                                className={`flex items-center gap-3 w-full p-2 py-4 rounded-lg text-left hover:bg-gray-100 transition max-h-[80px] overflow-hidden ${selectedChat?.room_id === chat.room_id ? "bg-gray-200" : ""
                                                     }`}
                                             >
                                                 <div className="relative">
