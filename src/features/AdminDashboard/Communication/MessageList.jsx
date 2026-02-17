@@ -249,6 +249,7 @@ const MessageList = ({
     };
 
     const MessageBubble = ({ msg }) => {
+        console.log("msg",msg)
         const isChartingAI = roomType === "ai_charting" && msg?.is_ai;
         const isAI = msg?.is_ai === true;
         const isMe = roomType === "ai"

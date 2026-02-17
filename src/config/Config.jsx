@@ -1,8 +1,8 @@
 
 
-export const base_URL = 'http://10.10.13.2:8000';   //Alvi
+// export const base_URL = 'http://10.10.13.2:8000';   //Alvi
 // export const base_URL = 'http://10.10.13.95:8000';
-// export const base_URL = 'http://206.162.244.150:8200'; // siam,
+export const base_URL = 'http://206.162.244.150:8200'; // siam,
 // export const base_URL = 'https://ralliform-stephany-spectrometric.ngrok-free.dev';
 export const user_ROLE = 'userRole';
 
