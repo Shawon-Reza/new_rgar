@@ -64,7 +64,7 @@ const Charting_AI = () => {
 
     return (
         <div>
-            {/* ========================= Chat Panel FFor Charting AI ======================== */}
+            {/* ========================= Chat Panel FFor Chartly AI ======================== */}
             {/*  chatRoom, roomType */}
             <section className=''>
                 <ChatPanel

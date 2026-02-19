@@ -562,7 +562,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
                   <button
                     onClick={handleFileInputClick}
                     disabled={isInputDisabled}
-                    className="text-gray-600 hover:text-gray-800 disabled:opacity-50"
+                    className="text-gray-600 hover:text-gray-800 disabled:opacity-50 cursor-pointer"
                     title="Attach files"
                   >
                     <FiPaperclip size={24} />
@@ -630,7 +630,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
               <button
                 onClick={handleSendMessage}
                 disabled={(!inputMessage.trim() && attachments.length === 0) || isInputDisabled}
-                className="disabled:opacity-50"
+                className="disabled:opacity-50 cursor-pointer"
                 title="Send Messages"
               >
                 <FiSend size={24} />

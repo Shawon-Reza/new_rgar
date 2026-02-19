@@ -165,7 +165,7 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
                     <NavLink
                         to="/admin/charting-ai"
                         onClick={onClick}
-                        title={isCollapsed ? 'Charting Ai' : ''}
+                        title={isCollapsed ? 'Chartly AI' : ''}
                         className={({ isActive }) =>
                             `w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-lg text-2xl text-gray-600 text-default opacity-90 transform transition-all duration-200 ease-in-out ${isActive ? " bg-white/35" : "hover:border hover:border-[#E2E2E2] "
                             }`
@@ -173,7 +173,7 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
                     >
                         <RiChatVoiceAiLine size={21} />
                         {!isCollapsed && (
-                            <span className="font-semibold text-sm sm:text-xl xl:text-2xl">Charting Ai</span>
+                            <span className="font-semibold text-sm sm:text-xl xl:text-2xl">Chartly AI</span>
                         )}
                     </NavLink>
                 }

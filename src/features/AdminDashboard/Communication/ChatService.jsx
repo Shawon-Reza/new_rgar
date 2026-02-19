@@ -22,7 +22,7 @@ export const connectWebSocketForChatList = ({ onMessage, onSeen }) => {
     }
 
     const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${wsProtocol}://206.162.244.150:8200/ws/rooms/?token=${token}`;
+    const wsUrl = `${wsProtocol}://rgar.duckdns.org/ws/rooms/?token=${token}`;
     const socket = new WebSocket(wsUrl);
     socket.onopen = () => console.log("✅ WebSocket connected for Chat List");
 
@@ -84,7 +84,7 @@ export const connectWebSocketForChat = ({ roomId, onMessage, onSeen }) => {
 
     // ........................WebSocket Connecting.......................... //
     const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${wsProtocol}://206.162.244.150:8200/ws/chat/${roomId}/?token=${token}`;
+    const wsUrl = `${wsProtocol}://rgar.duckdns.org/ws/chat/${roomId}/?token=${token}`;
     const socket = new WebSocket(wsUrl);
     socket.onopen = () => console.log("✅ WebSocket connected for Chat List");
 
@@ -147,7 +147,7 @@ export const connectWebSocketForNotifications = ({ onMessage, onSeen }) => {
 
     // ........................WebSocket Connecting.......................... //
     const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${wsProtocol}://206.162.244.150:8200/ws/notifications/?token=${token}`;
+    const wsUrl = `${wsProtocol}://rgar.duckdns.org/ws/notifications/?token=${token}`;
 
 
     let socket = null;
