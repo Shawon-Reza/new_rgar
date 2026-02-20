@@ -56,7 +56,7 @@ const LoginPage = () => {
                 <div>
                     <div className='text-center mb-8'>
                         <h1 className='text-4xl font-bold primarycolor mb-2 text-primary'>
-                            Log in to your account test
+                            Log in to your account
                         </h1>
                     </div>
 
