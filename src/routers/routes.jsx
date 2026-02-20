@@ -100,7 +100,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "assigned-clinic",
-                element: <PrivateRoute roles={[ROLES.DOCTOR, ROLES.MANAGER, ROLES.STAFF, ROLES.JR_STAFF,ROLES.PRESIDENT]} ><AssignedClinic></AssignedClinic></PrivateRoute>,
+                element: <PrivateRoute roles={[ROLES.DOCTOR, ROLES.MANAGER, ROLES.STAFF, ROLES.JR_STAFF, ROLES.PRESIDENT]} ><AssignedClinic></AssignedClinic></PrivateRoute>,
             },
             {
                 path: "subject-matters",
