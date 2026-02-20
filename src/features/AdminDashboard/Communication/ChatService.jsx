@@ -22,7 +22,7 @@ export const connectWebSocketForChatList = ({ onMessage, onSeen }) => {
     }
 
     const wsProtocol = window.location.protocol === "https:" ? "wss" : "wss";
-    const wsUrl = `${wsProtocol}://rgar.duckdns.org/ws/rooms/?token=${token}`;
+    const wsUrl = `${wsProtocol}://backend.getkyroai.com/ws/rooms/?token=${token}`;
     const socket = new WebSocket(wsUrl);
     socket.onopen = () => console.log("✅ WebSocket connected for Chat List");
 
@@ -84,7 +84,7 @@ export const connectWebSocketForChat = ({ roomId, onMessage, onSeen }) => {
 
     // ........................WebSocket Connecting.......................... //
     const wsProtocol = window.location.protocol === "https:" ? "wss" : "wss";
-    const wsUrl = `${wsProtocol}://rgar.duckdns.org/ws/chat/${roomId}/?token=${token}`;
+    const wsUrl = `${wsProtocol}://backend.getkyroai.com/ws/chat/${roomId}/?token=${token}`;
     const socket = new WebSocket(wsUrl);
     socket.onopen = () => console.log("✅ WebSocket connected for Chat List");
 
@@ -147,9 +147,9 @@ export const connectWebSocketForNotifications = ({ onMessage, onSeen }) => {
 
     // ........................WebSocket Connecting.......................... //
     const wsProtocol = window.location.protocol === "https:" ? "wss" : "wss";
-    const wsUrl = `${wsProtocol}://rgar.duckdns.org/ws/notifications/?token=${token}`;
+    const wsUrl = `${wsProtocol}://backend.getkyroai.com/ws/notifications/?token=${token}`;
 
-//  ws://rgar.duckdns.org/ws/notifications/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxNTc3MjI1LCJpYXQiOjE3NzE0OTA4MjUsImp0aSI6IjgzMzhkZjdkNmU0ZjQ3N2VhYWQ3Y2VkMjAyZjk2ZmVkIiwidXNlcl9pZCI6IjE1In0.AeIvjStz9fieYXlLaq8MpvIdORuZo3qs9aO1GKZ_k9w
+//  ws://backend.getkyroai.com/ws/notifications/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxNTc3MjI1LCJpYXQiOjE3NzE0OTA4MjUsImp0aSI6IjgzMzhkZjdkNmU0ZjQ3N2VhYWQ3Y2VkMjAyZjk2ZmVkIiwidXNlcl9pZCI6IjE1In0.AeIvjStz9fieYXlLaq8MpvIdORuZo3qs9aO1GKZ_k9w
 
     let socket = null;
 
