@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { FiGrid, FiMessageSquare, FiLock, FiUsers, FiSettings, FiPlus } from "react-icons/fi"
 import { NavLink, useNavigate } from "react-router-dom"
 import logo from "../../assets/logo.png"
+import logoText from "../../assets/logoText.png"
 import { TbLayoutSidebarFilled } from 'react-icons/tb'
 import { BsLayoutSidebarInset } from 'react-icons/bs'
 import { PiFilesThin, PiHospitalLight } from "react-icons/pi";
@@ -117,13 +118,17 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
                     <div className=" p-2 rounded-lg">
                         <figure>
                             <img src={logo} alt="AI.Desk Logo  "
-                                className={isCollapsed ? 'w-8' : ''}
+                                className={isCollapsed ? 'w-8 h-8' : 'h-8 w-8'}
                             />
                         </figure>
                     </div>
                     {!isCollapsed && (
-                        <h1
-                            className="text-2xl font-bold">AI.Desk</h1>
+
+                        <figure>
+                            <img src={logoText} alt="AI.Desk Logo  "
+                                className={isCollapsed ? 'w- h-8' : 'h-8 w-'}
+                            />
+                        </figure>
                     )}
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import LoginPage from "../features/auth/LoginPage";
+import DisclaimerPrivacyPage from "../features/auth/DisclaimerPrivacyPage";
 import ResetPasswordPage from "../features/auth/ResetPasswordPage";
 import ForgotPasswordPage from "../features/auth/ForgotPasswordPage";
 import AdminDashboard from "../features/AdminDashboard/AdminDashboard";
@@ -165,6 +166,10 @@ export const router = createBrowserRouter([
     {
         path: "/login",
         element: <LoginPage />,
+    },
+    {
+        path: "/disclaimer-privacy",
+        element: <DisclaimerPrivacyPage />,
     },
     {
         path: "/reset-password",

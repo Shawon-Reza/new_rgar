@@ -53,7 +53,7 @@ const EditGroupModal = ({ onClose, roomId }) => {
         onError: (error) => {
             console.error('Error updating group:', error);
             const msg = error?.response?.data?.message || error?.message || 'Failed to update group';
-            toast.error(msg);
+            toast.error(error?.response?.data?.detail || "Failed to update group");
         },
     });
 

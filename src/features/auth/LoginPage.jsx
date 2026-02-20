@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { base_URL } from '../../config/Config';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const LoginPage = () => {
@@ -54,7 +54,7 @@ const LoginPage = () => {
                 <div>
                     <div className='text-center mb-8'>
                         <h1 className='text-4xl font-bold primarycolor mb-2 text-primary'>
-                            Sign in to your account test
+                            Log in to your account test
                         </h1>
                     </div>
 
@@ -126,7 +126,11 @@ const LoginPage = () => {
                     {/* Disclaimer */}
                     <div className='mt-8 text-center'>
                         <p className='text-sm text-gray-500'>
-                            <strong className='text-primary'>Disclaimer:</strong><br />
+                            <strong className='text-primary'>
+                                <Link to="/disclaimer-privacy" className='hover:underline'>Disclaimer</Link>
+                                {' | '}
+                                <Link to="/disclaimer-privacy" className='hover:underline'>Privacy policy</Link>
+                            </strong><br />
                             All Rights Reserved
                         </p>
                     </div>

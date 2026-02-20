@@ -160,7 +160,7 @@ const RolesTypes = () => {
                     <h2 className="text-lg font-semibold text-gray-800">Clinic Types</h2>
                     <button
                         onClick={() => setShowAddClinicTypeModal(true)}
-                        className={`flex items-center gap-1 px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-lg transition ${userProfileData?.role === "admin" ? "" : "hidden"}`}
+                        className={`flex items-center gap-1 px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-lg transition ${userProfileData?.role === "owner" ? "" : "hidden"}`}
                     >
                         <FiPlus className="w-4 h-4" />
                         Add New
