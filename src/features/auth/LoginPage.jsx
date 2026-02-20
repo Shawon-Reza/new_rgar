@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import img from "../../assets/authimg.png";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import icon from "../../assets/python.png";
+import icon from "../../assets/loginLogo.png";
 // import axiosApi from "../../service/axiosInstance";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { base_URL } from '../../config/Config';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const LoginPage = () => {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +55,7 @@ const LoginPage = () => {
                 <div>
                     <div className='text-center mb-8'>
                         <h1 className='text-4xl font-bold primarycolor mb-2 text-primary'>
-                            Sign in to your account
+                            Log in to your account test
                         </h1>
                     </div>
 
@@ -117,26 +118,27 @@ const LoginPage = () => {
                                 </button>
 
                             </div>
-
-
                         </form>
-
                     </div>
 
                     {/* Disclaimer */}
                     <div className='mt-8 text-center'>
                         <p className='text-sm text-gray-500'>
-                            <strong className='text-primary'>Disclaimer:</strong><br />
+                            <strong className='text-primary'>
+                                <Link to="/disclaimer-privacy" className='hover:underline'>Disclaimer</Link>
+                                {' | '}
+                                <Link to="/disclaimer-privacy" className='hover:underline'>Privacy policy</Link>
+                            </strong><br />
                             All Rights Reserved
                         </p>
                     </div>
                 </div>
                 {/* Absolute title display */}
-                <div className='absolute top-8 left-7 flex items-center gap-2 primarycolor'>
-                    <img src={icon} alt=""
-                        className='h-12 w-12'
+                <div className='absolute top-8 left-7 flex items-center primarycolor bg-primary px-4 py-2 rounded-lg shadow-sm'>
+                    <img src={icon} alt="Kyro AI"
+                        className='h-8 md:h-10 w-auto max-w-[520px] object-contain'
                     />
-                    <p className='text-3xl font-bold'>AI.Desk</p>
+                    {/* <p className='text-3xl font-bold'>AI.Desk</p> */}
                 </div>
 
             </section>

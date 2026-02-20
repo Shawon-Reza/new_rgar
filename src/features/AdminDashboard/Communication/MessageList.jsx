@@ -2,9 +2,12 @@ import { useEffect, useRef, useState, useMemo, memo } from "react";
 import ReactMarkdown from 'react-markdown';
 // import remarkGfm from 'remark-gfm';
 import { FiThumbsUp, FiThumbsDown, FiDownload, FiFile, FiChevronDown, FiCornerUpRight } from "react-icons/fi";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosApi from "../../../service/axiosInstance";
+import { IoIosSend } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { LuSend } from "react-icons/lu";
+import { base_URL } from "../../../config/Config";
 
 const MessageList = ({
     messages,
@@ -31,6 +34,7 @@ const MessageList = ({
     const [showScrollButton, setShowScrollButton] = useState(false);
     const lastScrollButtonStateRef = useRef(false);
     const isSelectingRef = useRef(false);
+    const queryClient = useQueryClient();
     const navigate = useNavigate();
     console.log("Path==========================================", path, roomType)
     const isChartingAI = roomType === "ai_charting";
@@ -249,7 +253,6 @@ const MessageList = ({
     };
 
     const MessageBubble = ({ msg }) => {
-        // console.log("msg",msg)
         const isChartingAI = roomType === "ai_charting" && msg?.is_ai;
         const isAI = msg?.is_ai === true;
         const isMe = roomType === "ai"
@@ -257,6 +260,17 @@ const MessageList = ({
             : (!isAI && Number(msg?.sender?.id) === Number(userId));
         const text = msg?.content || "";
         const isHighlighted = anchorMessageId !== null && msg.id === Number(anchorMessageId);
+        const senderName = isAI ? "AI Assistant" : (msg?.sender?.name || "Unknown User");
+
+        const getSenderImageSrc = () => {
+            if (isAI) return "";
+            const picture = msg?.sender?.picture;
+            if (!picture) return "";
+            if (/^https?:\/\//i.test(picture)) return picture;
+            return `${base_URL}${picture.startsWith("/") ? "" : "/"}${picture}`;
+        };
+
+        const senderImageSrc = getSenderImageSrc();
 
         // Helper function to determine file type from URL
         const getFileType = (url) => {
@@ -280,7 +294,7 @@ const MessageList = ({
                     return '📎 File';
             }
         };
-        //==================================== Like and Dislike reaction state and mutation========================= \\
+        //==================================== Like and Dislike reaction state and mutation========================= \\   
 
         const [optimisticReaction, setOptimisticReaction] = useState(msg?.my_reaction || null);
         const [optimisticCounts, setOptimisticCounts] = useState({
@@ -293,6 +307,8 @@ const MessageList = ({
                 axiosApi.post(`/api/v1/messages/${msg.id}/react/`, { reaction }),
             onSuccess: () => {
                 console.log("✅ Reaction sent successfully");
+                queryClient.invalidateQueries({ queryKey: ["messages"] });
+                queryClient.refetchQueries({ queryKey: ["messages"] });
             },
             onError: (err) => {
                 console.error("❌ Reaction failed:", err?.response?.data || err?.message);
@@ -326,6 +342,28 @@ const MessageList = ({
 
         return (
             <div id={`message-${msg.id}`} className={`group flex mb-4 ${isMe ? "justify-end" : "justify-start"} ${isHighlighted ? 'animate-pulse' : ''} `}>
+                {/* ================================== Display Sender icon================================ */}
+                {!isMe && (
+                    <div
+                        className="mr-2 mt-1 h-8 w-8 min-w-8 overflow-hidden rounded-full border border-gray-300 bg-white flex items-center justify-center"
+                        title={senderName}
+                    >
+                        {isAI ? (
+                            <span className="text-sm">🤖</span>
+                        ) : senderImageSrc ? (
+                            <img
+                                src={senderImageSrc}
+                                alt={senderName}
+                                className="h-full w-full object-cover"
+                            />
+                        ) : (
+                            <span className="text-xs font-semibold text-gray-600">
+                                {senderName?.charAt(0)?.toUpperCase() || "U"}
+                            </span>
+                        )}
+                    </div>
+                )}
+
                 <div
                     className={`px-4 py-2 rounded-lg max-w-md break-words
                 ${isAI && "bg-purple-100 border border-purple-300"}
@@ -346,9 +384,9 @@ const MessageList = ({
                             type="button"
                             onClick={() => handleForwardToAiAssistant(text)}
                             title="Forward to AI Assistant For Further Analysis"
-                            className="absolute -top-0 -right-0 opacity-0 group-hover:opacity-100 transition bg-primary border border-gray-300 rounded-full p-1.5 shadow-sm hover:bg-gray-100 cursor-pointer"
+                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition  rounded-full  cursor-pointer"
                         >
-                            <FiCornerUpRight size={14} className="text-white" />
+                            <LuSend   size={24} className="text-red-500" />
                         </button>
                     )}
 
@@ -425,6 +463,25 @@ const MessageList = ({
                         </div>
                     )}
                 </div>
+
+                {isMe && (
+                    <div
+                        className="ml-2 mt-1 h-8 w-8 min-w-8 overflow-hidden rounded-full border border-gray-300 bg-white flex items-center justify-center"
+                        title={senderName}
+                    >
+                        {senderImageSrc ? (
+                            <img
+                                src={senderImageSrc}
+                                alt={senderName}
+                                className="h-full w-full object-cover"
+                            />
+                        ) : (
+                            <span className="text-xs font-semibold text-gray-600">
+                                {senderName?.charAt(0)?.toUpperCase() || "U"}
+                            </span>
+                        )}
+                    </div>
+                )}
             </div>
         );
     };

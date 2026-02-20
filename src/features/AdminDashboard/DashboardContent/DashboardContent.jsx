@@ -15,7 +15,7 @@ const DashboardContent = () => {
   // ============ STATE MANAGEMENT ============
   const [recentActivity, setRecentActivity] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [activityStart, setActivityStart] = useState(0)
+  const [activityPage, setActivityPage] = useState(0)
   const navigate = useNavigate();
 
   const { userProfileData } = useGetUserProfile();
@@ -91,7 +91,7 @@ const DashboardContent = () => {
 
     if (dashboardData?.data?.recent_activity && Array.isArray(dashboardData.data.recent_activity)) {
       setRecentActivity(dashboardData.data.recent_activity)
-      setActivityStart(0)
+      setActivityPage(0)
       setLoading(false)
       console.log("[v0] Recent Activity Loaded:", dashboardData.data.recent_activity)
     } else {
@@ -112,10 +112,12 @@ const DashboardContent = () => {
     console.log("[v0] Current activities count:", recentActivity?.length)
     const itemsPerPage = 4
     if (!recentActivity || recentActivity.length === 0) return
-    const nextStart = activityStart + itemsPerPage
-    if (nextStart < recentActivity.length) {
-      setActivityStart(nextStart)
-    }
+    const totalPages = Math.ceil(recentActivity.length / itemsPerPage)
+    setActivityPage((prev) => Math.min(prev + 1, totalPages - 1))
+  }
+
+  const handlePreviousActivities = () => {
+    setActivityPage((prev) => Math.max(0, prev - 1))
   }
 
   // ====================================================== HELPER COMPONENTS ==================================================
@@ -151,7 +153,11 @@ const DashboardContent = () => {
 
   // Visible activities (page of 4)
   const itemsPerPage = 4
+  const totalActivities = recentActivity?.length || 0
+  const activityStart = activityPage * itemsPerPage
   const visibleActivities = recentActivity?.slice(activityStart, activityStart + itemsPerPage) || []
+  const canGoPrevious = activityPage > 0
+  const canGoNext = activityStart + itemsPerPage < totalActivities
 
   // Quick Action visibility flags
   const hideAssignClinics = userRole === "owner" || userRole === "president"
@@ -271,8 +277,8 @@ const DashboardContent = () => {
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
                 <div className="space-y-2 flex-1">
                   {visibleActivities && visibleActivities.length > 0 ? (
-                    visibleActivities.map((activity) => (
-                      <ActivityItem key={activity.id} activity={activity} />
+                    visibleActivities.map((activity, index) => (
+                      <ActivityItem key={`${activity?.id || "activity"}-${activityPage}-${index}`} activity={activity} />
                     ))
                   ) : (
                     <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 text-gray-500">
@@ -281,18 +287,39 @@ const DashboardContent = () => {
                   )}
                 </div>
 
-                <button
-                  onClick={handleScrollMore}
-                  className="w-full mt-4 py-2 font-semibold border-2 rounded-lg transition-colors"
-                  style={{
-                    color: "var(--color-primary)",
-                    borderColor: "var(--color-primary)",
-                  }}
-                  onMouseEnter={(e) => (e.target.style.backgroundColor = "rgba(0, 164, 166, 0.05)")}
-                  onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
-                >
-                  Scroll More
-                </button>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <button
+                    onClick={handlePreviousActivities}
+                    disabled={!canGoPrevious}
+                    className="w-full py-2 font-semibold border-2 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      color: "var(--color-primary)",
+                      borderColor: "var(--color-primary)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (canGoPrevious) e.target.style.backgroundColor = "rgba(0, 164, 166, 0.05)"
+                    }}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
+                  >
+                    Previous
+                  </button>
+
+                  <button
+                    onClick={handleScrollMore}
+                    disabled={!canGoNext}
+                    className="w-full py-2 font-semibold border-2 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      color: "var(--color-primary)",
+                      borderColor: "var(--color-primary)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (canGoNext) e.target.style.backgroundColor = "rgba(0, 164, 166, 0.05)"
+                    }}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
+                  >
+                    Click to see more
+                  </button>
+                </div>
               </div>
 
 

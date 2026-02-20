@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosApi from "../../../service/axiosInstance";
+import { toast } from "react-toastify";
+
 
 const PromtModifier = () => {
     const queryClient = useQueryClient();
     const [modifierValue, setModifierValue] = useState("");
+    const [modifierName, setModifierName] = useState("");
+    const [isActive, setIsActive] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [selectedModifierId, setSelectedModifierId] = useState("");
+    const isCreatingNew = selectedModifierId === "new";
 
     const stripMarkdownToText = (value) => {
         if (!value) return "";
@@ -20,25 +26,7 @@ const PromtModifier = () => {
             .trim();
     };
 
-    // =======================================Reset Modifier==========================================\\
-    const resetModifierMutation = useMutation({
-        mutationFn: async () => {
-            const response = await axiosApi.delete(
-                "/api/v1/president-prompt/modifier/"
-            );
-            return response.data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["presidentPromptModifier"] });
-            setModifierValue("");
-            setIsEditing(false);
-        },
-        onError: (err) => {
-            console.error("[PromtModifier] Failed to reset modifier:", err);
-        },
-    });
-
-    // =======================================Fetch modifier==========================================\\
+    // ======================================= Fetch modifier ==========================================\\
     const {
         data: modifierData,
         isLoading,
@@ -49,25 +37,26 @@ const PromtModifier = () => {
             const response = await axiosApi.get(
                 "/api/v1/president-prompt/modifier/"
             );
-            console.log("[PromtModifier] Modifier Data:", response.data);
             return response.data;
         },
     });
-    console.log("[PromtModifier] Modifier Data from useQuery:", modifierData);
 
-    // =======================================Update modifier==========================================\\
+    const modifierList = Array.isArray(modifierData?.data) ? modifierData.data : [];
+    const selectedModifier =
+        modifierList.find((item) => String(item?.id) === String(selectedModifierId)) || null;
+
+    // ======================================= Update modifier ==========================================\\
     const updateModifierMutation = useMutation({
-        mutationFn: async (payload) => {
-            const response = await axiosApi.put(
-                "/api/v1/president-prompt/modifier/",
+        mutationFn: async ({ id, payload }) => {
+            const response = await axiosApi.patch(
+                `/api/v1/president-prompt/modifier/${id}/`,
                 payload
             );
-            console.log("[PromtModifier] Update Modifier Response:", response.data);
             return response.data;
         },
-        onSuccess: (data) => {
-            console.log("[PromtModifier] Modifier updated successfully:", data);
-            queryClient.invalidateQueries({ queryKey: ["presidentPromptModifier"] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["presidentPromptModifier"] });
+            await queryClient.refetchQueries({ queryKey: ["presidentPromptModifier"] });
             setIsEditing(false);
         },
         onError: (err) => {
@@ -75,13 +64,118 @@ const PromtModifier = () => {
         },
     });
 
-    console.log("[PromtModifier] Modifier Data State:", modifierData?.data);
+    // ======================================= Create modifier ==========================================\\
+    const createModifierMutation = useMutation({
+        mutationFn: async (payload) => {
+            const response = await axiosApi.post(
+                "/api/v1/president-prompt/modifier/",
+                payload
+            );
+            return response.data;
+        },
+        onSuccess: async (data) => {
+            await queryClient.invalidateQueries({ queryKey: ["presidentPromptModifier"] });
+            await queryClient.refetchQueries({ queryKey: ["presidentPromptModifier"] });
+            const createdId = data?.data?.id;
+            if (createdId) {
+                setSelectedModifierId(String(createdId));
+            }
+            setIsEditing(false);
+        },
+        onError: (err) => {
+            console.error("[PromtModifier] Failed to create modifier:", err);
+        },
+    });
+
+    // ======================================= Delete modifier ==========================================\\
+    const deleteModifierMutation = useMutation({
+        mutationFn: async (id) => {
+            const response = await axiosApi.delete(`/api/v1/president-prompt/modifier/${id}/`);
+            return response.data;
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["presidentPromptModifier"] });
+            await queryClient.refetchQueries({ queryKey: ["presidentPromptModifier"] });
+            setIsEditing(false);
+        },
+        onError: (err) => {
+            console.error("[PromtModifier] Failed to delete modifier:", err);
+            console.log(err?.response?.data?.message)
+            toast.error(err?.response?.data?.message || "Failed to delete modifier");
+        },
+    });
 
     useEffect(() => {
-        if (modifierData?.data?.modifier && !isEditing) {
-            setModifierValue(stripMarkdownToText(modifierData.data.modifier));
+        if (isLoading || error) {
+            return;
         }
-    }, [modifierData?.data?.modifier, isEditing]);
+
+        if (!modifierList.length) {
+            if (!selectedModifierId) {
+                setSelectedModifierId("new");
+                setIsEditing(true);
+            }
+            return;
+        }
+
+        if (selectedModifierId === "new") {
+            return;
+        }
+
+        const activeModifier = modifierList.find((item) => item?.is_active);
+        const fallbackModifier = activeModifier || modifierList[0];
+
+        if (!selectedModifierId) {
+            setSelectedModifierId(String(fallbackModifier?.id));
+            return;
+        }
+
+        const stillExists = modifierList.some(
+            (item) => String(item?.id) === String(selectedModifierId)
+        );
+
+        if (!stillExists) {
+            setSelectedModifierId(String(fallbackModifier?.id));
+        }
+    }, [modifierList, selectedModifierId, isLoading, error]);
+
+    useEffect(() => {
+        if (isCreatingNew) {
+            return;
+        }
+
+        if (selectedModifier?.modifier && !isEditing) {
+            setModifierValue(stripMarkdownToText(selectedModifier.modifier));
+        }
+        if (!selectedModifier?.modifier && !isEditing) {
+            setModifierValue("");
+        }
+    }, [selectedModifier?.modifier, isEditing, isCreatingNew]);
+
+    useEffect(() => {
+        if (isCreatingNew) {
+            setModifierName("");
+            setModifierValue("");
+        }
+    }, [isCreatingNew]);
+
+    useEffect(() => {
+        if (!isCreatingNew && selectedModifier?.name && !isEditing) {
+            setModifierName(String(selectedModifier.name));
+        }
+        if (!isCreatingNew && !selectedModifier?.name && !isEditing) {
+            setModifierName("");
+        }
+    }, [selectedModifier?.name, isCreatingNew, isEditing]);
+
+    useEffect(() => {
+        if (!isCreatingNew && !isEditing) {
+            setIsActive(Boolean(selectedModifier?.is_active));
+        }
+        if (isCreatingNew) {
+            setIsActive(false);
+        }
+    }, [selectedModifier?.is_active, isCreatingNew, isEditing]);
 
     if (isLoading) {
         return (
@@ -110,6 +204,15 @@ const PromtModifier = () => {
     }
 
     const handleSave = async () => {
+        if (isCreatingNew && (!modifierName.trim() || !modifierValue.trim())) {
+            Swal.fire({
+                icon: "warning",
+                title: "Missing fields",
+                text: "Please enter modifier name and modifier text.",
+            });
+            return;
+        }
+
         const result = await Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -121,7 +224,46 @@ const PromtModifier = () => {
         });
 
         if (result.isConfirmed) {
-            updateModifierMutation.mutate({ modifier: modifierValue });
+            if (isCreatingNew) {
+                createModifierMutation.mutate({
+                    name: modifierName.trim(),
+                    modifier: modifierValue.trim(),
+                });
+                return;
+            }
+
+            if (!selectedModifier?.id) {
+                return;
+            }
+
+            updateModifierMutation.mutate({
+                id: selectedModifier.id,
+                payload: {
+                    name: modifierName.trim() || selectedModifier?.name || "",
+                    modifier: modifierValue.trim(),
+                    is_active: isActive,
+                },
+            });
+        }
+    };
+
+    const handleDelete = async () => {
+        if (isCreatingNew || !selectedModifier?.id) {
+            return;
+        }
+
+        const result = await Swal.fire({
+            title: "Delete this modifier?",
+            text: "This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it",
+        });
+
+        if (result.isConfirmed) {
+            deleteModifierMutation.mutate(selectedModifier.id);
         }
     };
 
@@ -130,15 +272,46 @@ const PromtModifier = () => {
             <div className="flex h-full flex-col gap-3 rounded-xl border border-gray-200 bg-white/50 p-4 md:p-5">
                 <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-500 font-bold">Output Modifier</p>
-                    <button
-                        type="button"
-                        onClick={() => resetModifierMutation.mutate()}
-                        className="text-xs text-white bg-primary px-3 py-2 rounded-lg font-medium cursor-pointer disabled:opacity-50"
-                        disabled={resetModifierMutation.isPending}
+                    <select
+                        className="min-w-[180px] text-xs border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700"
+                        value={selectedModifierId}
+                        onChange={(e) => {
+                            const nextValue = e.target.value;
+                            setSelectedModifierId(nextValue);
+                            setIsEditing(nextValue === "new");
+                            if (nextValue === "new") {
+                                setModifierName("");
+                                setModifierValue("");
+                            }
+                        }}
                     >
-                        {resetModifierMutation.isPending ? "Resetting..." : "Reset"}
-                    </button>
+                        <option value="" disabled>
+                            Select modifier
+                        </option>
+                        <option value="new">+ Create New Modifier</option>
+                        {modifierList.length
+                            ? modifierList.map((item) => (
+                                <option key={item.id} value={String(item.id)}>
+                                    {item.name ? `Modifier ${item.name}` : `Modifier ${item.id}`}
+                                    {item.is_active ? " (Active)" : ""}
+                                </option>
+                            ))
+                            : (
+                                <option value="" disabled>
+                                    No modifiers found
+                                </option>
+                            )}
+                    </select>
                 </div>
+
+                <input
+                    type="text"
+                    className="w-full border border-gray-200 rounded-lg p-3 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Modifier name"
+                    value={modifierName}
+                    onChange={(e) => setModifierName(e.target.value)}
+                    disabled={!isEditing}
+                />
 
                 <textarea
                     className="w-full flex-1 min-h-[260px] md:min-h-[320px] resize-none border border-gray-200 rounded-lg p-3 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -147,11 +320,23 @@ const PromtModifier = () => {
                     disabled={!isEditing}
                 />
 
+                {!isCreatingNew && (
+                    <label className="inline-flex items-center gap-2 text-xs text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={isActive}
+                            onChange={(e) => setIsActive(e.target.checked)}
+                            disabled={!isEditing}
+                        />
+                        Active modifier
+                    </label>
+                )}
+
                 <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>Last updated by: {modifierData?.data?.updated_by || "N/A"}</span>
+                    <span>Last updated by: {isCreatingNew ? "N/A" : selectedModifier?.updated_by || "N/A"}</span>
                     <span>
-                        {modifierData?.data?.updated_at
-                            ? new Date(modifierData.data.updated_at).toLocaleString()
+                        {!isCreatingNew && selectedModifier?.updated_at
+                            ? new Date(selectedModifier.updated_at).toLocaleString()
                             : "N/A"}
                     </span>
                 </div>
@@ -162,17 +347,27 @@ const PromtModifier = () => {
                         className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition disabled:opacity-50"
                         disabled={isEditing}
                     >
-                        Edit
+                        {isCreatingNew ? "Create" : "Edit"}
                     </button>
                     <button
                         type="button"
                         onClick={handleSave}
                         className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#5E5B4E] transition disabled:opacity-50"
-                        disabled={!isEditing || updateModifierMutation.isPending}
+                        disabled={!isEditing || updateModifierMutation.isPending || createModifierMutation.isPending || deleteModifierMutation.isPending}
                     >
-                        {updateModifierMutation.isPending ? "Saving..." : "Save"}
+                        {updateModifierMutation.isPending || createModifierMutation.isPending ? "Saving..." : "Save"}
                     </button>
                 </div>
+                {!isCreatingNew && (
+                    <button
+                        type="button"
+                        onClick={handleDelete}
+                        className="w-full rounded-md border border-red-300 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 transition disabled:opacity-50"
+                        disabled={deleteModifierMutation.isPending || updateModifierMutation.isPending || createModifierMutation.isPending}
+                    >
+                        {deleteModifierMutation.isPending ? "Deleting..." : "Delete"}
+                    </button>
+                )}
             </div>
         </section>
     );
