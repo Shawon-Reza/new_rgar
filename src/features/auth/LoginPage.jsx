@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import img from "../../assets/authimg.png";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import icon from "../../assets/python.png";
+import icon from "../../assets/loginLogo.png";
 // import axiosApi from "../../service/axiosInstance";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -136,11 +136,11 @@ const LoginPage = () => {
                     </div>
                 </div>
                 {/* Absolute title display */}
-                <div className='absolute top-8 left-7 flex items-center gap-2 primarycolor'>
-                    <img src={icon} alt=""
-                        className='h-12 w-12'
+                <div className='absolute top-8 left-7 flex items-center primarycolor bg-primary px-4 py-2 rounded-lg shadow-sm'>
+                    <img src={icon} alt="Kyro AI"
+                        className='h-8 md:h-10 w-auto max-w-[520px] object-contain'
                     />
-                    <p className='text-3xl font-bold'>AI.Desk</p>
+                    {/* <p className='text-3xl font-bold'>AI.Desk</p> */}
                 </div>
 
             </section>

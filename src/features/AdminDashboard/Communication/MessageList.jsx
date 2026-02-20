@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useMemo, memo } from "react";
 import ReactMarkdown from 'react-markdown';
 // import remarkGfm from 'remark-gfm';
 import { FiThumbsUp, FiThumbsDown, FiDownload, FiFile, FiChevronDown, FiCornerUpRight } from "react-icons/fi";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosApi from "../../../service/axiosInstance";
 import { IoIosSend } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +34,7 @@ const MessageList = ({
     const [showScrollButton, setShowScrollButton] = useState(false);
     const lastScrollButtonStateRef = useRef(false);
     const isSelectingRef = useRef(false);
+    const queryClient = useQueryClient();
     const navigate = useNavigate();
     console.log("Path==========================================", path, roomType)
     const isChartingAI = roomType === "ai_charting";
@@ -306,6 +307,8 @@ const MessageList = ({
                 axiosApi.post(`/api/v1/messages/${msg.id}/react/`, { reaction }),
             onSuccess: () => {
                 console.log("✅ Reaction sent successfully");
+                queryClient.invalidateQueries({ queryKey: ["messages"] });
+                queryClient.refetchQueries({ queryKey: ["messages"] });
             },
             onError: (err) => {
                 console.error("❌ Reaction failed:", err?.response?.data || err?.message);

@@ -118,6 +118,11 @@ const DashboardContent = () => {
     }
   }
 
+  const handlePreviousActivities = () => {
+    const itemsPerPage = 4
+    setActivityStart((prev) => Math.max(0, prev - itemsPerPage))
+  }
+
   // ====================================================== HELPER COMPONENTS ==================================================
   const ActivityItem = ({ activity }) => {
 
@@ -152,6 +157,8 @@ const DashboardContent = () => {
   // Visible activities (page of 4)
   const itemsPerPage = 4
   const visibleActivities = recentActivity?.slice(activityStart, activityStart + itemsPerPage) || []
+  const canGoPrevious = activityStart > 0
+  const canGoNext = (activityStart + itemsPerPage) < (recentActivity?.length || 0)
 
   // Quick Action visibility flags
   const hideAssignClinics = userRole === "owner" || userRole === "president"
@@ -281,18 +288,39 @@ const DashboardContent = () => {
                   )}
                 </div>
 
-                <button
-                  onClick={handleScrollMore}
-                  className="w-full mt-4 py-2 font-semibold border-2 rounded-lg transition-colors"
-                  style={{
-                    color: "var(--color-primary)",
-                    borderColor: "var(--color-primary)",
-                  }}
-                  onMouseEnter={(e) => (e.target.style.backgroundColor = "rgba(0, 164, 166, 0.05)")}
-                  onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
-                >
-                  Scroll More
-                </button>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <button
+                    onClick={handlePreviousActivities}
+                    disabled={!canGoPrevious}
+                    className="w-full py-2 font-semibold border-2 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      color: "var(--color-primary)",
+                      borderColor: "var(--color-primary)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (canGoPrevious) e.target.style.backgroundColor = "rgba(0, 164, 166, 0.05)"
+                    }}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
+                  >
+                    Previous
+                  </button>
+
+                  <button
+                    onClick={handleScrollMore}
+                    disabled={!canGoNext}
+                    className="w-full py-2 font-semibold border-2 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      color: "var(--color-primary)",
+                      borderColor: "var(--color-primary)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (canGoNext) e.target.style.backgroundColor = "rgba(0, 164, 166, 0.05)"
+                    }}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
+                  >
+                    Click to see more
+                  </button>
+                </div>
               </div>
 
 
