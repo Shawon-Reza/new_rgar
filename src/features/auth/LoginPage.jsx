@@ -39,8 +39,9 @@ const LoginPage = () => {
 
             // navigate or update global state here if needed
         } catch (error) {
-            const message = error?.response?.data?.detail || error.message || 'Login failed';
+            const message = error?.response?.data?.message || 'Login failed. Please check your credentials and try again.';
             toast.error(message);
+            console.log(error?.response?.data?.message)
         } finally {
             setIsLoading(false);
         }

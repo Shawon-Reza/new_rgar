@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { FiGrid, FiMessageSquare, FiLock, FiUsers, FiSettings, FiPlus } from "react-icons/fi"
 import { NavLink, useNavigate } from "react-router-dom"
-import logo from "../../assets/python2.png"
+import logo from "../../assets/logo.png"
 import { TbLayoutSidebarFilled } from 'react-icons/tb'
 import { BsLayoutSidebarInset } from 'react-icons/bs'
 import { PiFilesThin, PiHospitalLight } from "react-icons/pi";
@@ -159,7 +159,7 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
                         <span className="font-semibold text-sm sm:text-xl xl:text-2xl">Communication</span>
                     )}
                 </NavLink>
-                {/* //====================================== Charting Ai For Doctor ======================================\\ */}
+                {/* //====================================== Chartly AI For Doctor ======================================\\ */}
                 {
                     userProfileData?.role === "doctor" &&
                     <NavLink

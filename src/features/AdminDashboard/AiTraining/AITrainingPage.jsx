@@ -8,7 +8,9 @@ import PromtModifier from './PromtModifier';
 const AITrainingPage = () => {
     const { userProfileData } = useGetUserProfile();
     console.log("0000000000000000000000000000000", userProfileData?.role);
-    const permission = userProfileData?.role === "president"
+    const president = userProfileData?.role === "president"
+    const admin = userProfileData?.role === "owner"
+    
     return (
         <div className='flex flex-col gap-15 '>
             <section className=''>
@@ -16,19 +18,19 @@ const AITrainingPage = () => {
             </section>
             {/* ================================ Prompt Modification =========================== */}
             {
-                permission && (
+                (president || admin) && (
 
                     <section className='rounded-2xl border border-[#E9E4DB] bg-white/50 p-4 md:p-6 shadow-sm'>
                         <div className='mb-4 flex items-center justify-between'>
                             <h3 className='text-base md:text-lg font-semibold text-gray-900'>Prompt Controls</h3>
                             <span className='text-xs text-gray-500'>Manage template and modifier</span>
                         </div>
-                        <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+                        <div className=''>
                             {
-                                permission && <PromptModifySection></PromptModifySection>
+                                president && <PromptModifySection></PromptModifySection>
                             }
                             {
-                                permission && <PromtModifier></PromtModifier>
+                                admin && <PromtModifier></PromtModifier>
                             }
                         </div>
                     </section>

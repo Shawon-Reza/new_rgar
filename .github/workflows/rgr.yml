@@ -1,0 +1,52 @@
+name: Frontend CI/CD Deploy
+ 
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+ 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+ 
+      - name: Install Dependencies
+        run: npm install
+ 
+      - name: Build Frontend
+        run: npm run build
+ 
+      - name: Clean old dist on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: rm -rf /home/rootuser/frontend/new_rgar/dist
+ 
+      - name: Copy dist to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "dist"
+          target: "/home/rootuser/frontend/new_rgar/"
+ 
+      - name: Reload Nginx
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            sudo nginx -t
+            sudo systemctl reload nginx
