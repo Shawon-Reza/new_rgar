@@ -29,7 +29,6 @@ const LoginPage = () => {
             });
             console.log(response)
             toast.success('Login successful');
-            navigate('/admin', { replace: true });
             // Saved auth tokens if returned
             if (response?.data) {
                 const { access, refresh } = response.data;
@@ -37,6 +36,8 @@ const LoginPage = () => {
                     localStorage.setItem('auth', JSON.stringify({ access, refresh }));
                 }
             }
+
+            navigate('/admin', { replace: true });
 
             // navigate or update global state here if needed
         } catch (error) {
@@ -113,8 +114,12 @@ const LoginPage = () => {
                                     text="Login"
                                 /> */}
 
-                                <button className='bg-primary w-full py-2 font-semibold text-white rounded-lg cursor-pointer'>
-                                    Login
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className='bg-primary w-full py-2 font-semibold text-white rounded-lg cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed'
+                                >
+                                    {isLoading ? 'Logging in...' : 'Login'}
                                 </button>
 
                             </div>
