@@ -3,7 +3,8 @@
 // export const base_URL = 'http://10.10.13.2:8000';   //Alvi
 // export const base_URL = 'http://10.10.13.95:8000';
 // export const base_URL = 'http://206.162.244.150:8200'; // siam,
-export const base_URL = 'https://rgar.duckdns.org'; // siam updated,
+// export const base_URL = 'https://rgar.duckdns.org'; // siam updated,
+export const base_URL = 'https://backend.getkyroai.com'; // siam Latest tht delivered on 20th feb 2024,
 
 // export const base_URL = 'https://ralliform-stephany-spectrometric.ngrok-free.dev';
 export const user_ROLE = 'userRole';
