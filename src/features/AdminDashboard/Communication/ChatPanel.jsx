@@ -332,7 +332,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
-    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'xls', 'xlsx', 'csv', 'doc', 'docx','pdf'];
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'xls', 'xlsx', 'csv', 'doc', 'docx', 'pdf'];
     const maxSize = 10 * 1024 * 1024; // 10MB
 
     const validFiles = files.filter(file => {
@@ -415,7 +415,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   const headerAvatar = avatar ? `http://10.10.13.2:8000${avatar}` : safeUser.avatar;
   console.log("pathaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", path)
   // charting-ai
-  console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^::::::',headerAvatar)
+  console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^::::::', headerAvatar)
 
   return (
     <div className={`flex flex-col h-full border border-gray-300 rounded-lg bg-white/50 ${path == "charting-ai" ? "min-h-[calc(100vh-130px)] max-h-[calc(100vh-100px)]" : ""}`}>
@@ -549,7 +549,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
             <div className="flex gap-3 w-full min-w-0">
 
               {/* ===================================== File upload button for group and private ================================== */}
-              {(roomType === "group" || roomType === "private" || roomType === "ai" ) && (
+              {(roomType === "group" || roomType === "private" || roomType === "ai") && (
                 <>
                   <input
                     ref={fileInputRef}
