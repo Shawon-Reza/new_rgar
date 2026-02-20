@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, redirect } from "react-router-dom";
 import LoginPage from "../features/auth/LoginPage";
 import DisclaimerPrivacyPage from "../features/auth/DisclaimerPrivacyPage";
 import ResetPasswordPage from "../features/auth/ResetPasswordPage";
@@ -33,17 +33,32 @@ import Theme from "../features/AdminDashboard/Theme";
 import GivenAssessmentDetailsFromUser from "../features/AdminDashboard/DashboardContent/GivenAssessmentDetailsFromUser";
 import RolesTypes from "../features/AdminDashboard/RolesTypes";
 
+const isAuthenticated = () => {
+    try {
+        const auth = JSON.parse(localStorage.getItem("auth") || "null");
+        return Boolean(auth?.access);
+    } catch {
+        return false;
+    }
+};
+
 
 
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <Navigate to="/admin" replace />,
+        loader: () => redirect(isAuthenticated() ? "/admin" : "/login"),
     },
     // Admin Dashboard Route
     {
         path: "/admin",
+        loader: () => {
+            if (!isAuthenticated()) {
+                return redirect("/login");
+            }
+            return null;
+        },
         element: <AdminDashboard />,
         children: [
             // Define child routes for admin dashboard here
