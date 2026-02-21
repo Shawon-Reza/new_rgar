@@ -44,7 +44,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     enabled: !!chatRoom && roomType === "group",
     staleTime: 5 * 60 * 1000,
   });
-
+console.log("===============================:::::::::::",roomMembersData)
   // ======================================= Messages (HTTP with infinite scroll) =======================================\\
   const {
     data,
@@ -409,7 +409,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   const safeUser = {
     name: data?.pages[0]?.room?.name || "Unknown User",
     role: data?.pages[0]?.room?.display_role || "unknown",
-    avatar: `http://10.10.13.2:8000${data?.pages[0]?.room?.image}` ||
+    avatar: `https://backend.getkyroai.com${data?.pages[0]?.room?.image}` ||
       "https://api.dicebear.com/7.x/avataaars/svg?seed=Chat",
   };
   const headerAvatar = avatar ? `http://10.10.13.2:8000${avatar}` : safeUser.avatar;
