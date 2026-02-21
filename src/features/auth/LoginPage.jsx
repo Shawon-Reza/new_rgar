@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { base_URL } from '../../config/Config';
 import { Link, useNavigate } from 'react-router-dom';
+import { getDeviceInfo } from '../../service/device';
 
 
 const LoginPage = () => {
@@ -22,11 +23,13 @@ const LoginPage = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            console.log()
-            const response = await axios.post(`${base_URL}/api/v1/login/`, {
+            const payload = {
                 email,
                 password,
-            });
+                ...getDeviceInfo(),
+            };
+            console.log(payload)
+            const response = await axios.post(`${base_URL}/api/v1/login/`, payload);
             console.log(response)
             toast.success('Login successful');
             // Saved auth tokens if returned
