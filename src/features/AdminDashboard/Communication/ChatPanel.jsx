@@ -412,7 +412,7 @@ console.log("===============================:::::::::::",roomMembersData)
     avatar: `https://backend.getkyroai.com${data?.pages[0]?.room?.image}` ||
       "https://api.dicebear.com/7.x/avataaars/svg?seed=Chat",
   };
-  const headerAvatar = avatar ? `http://10.10.13.2:8000${avatar}` : safeUser.avatar;
+  const headerAvatar = avatar ? `https://backend.getkyroai.com${avatar}` : safeUser.avatar;
   console.log("pathaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", path)
   // charting-ai
   console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^::::::', headerAvatar)
