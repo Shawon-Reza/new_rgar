@@ -7,6 +7,7 @@ import axiosApi from "../../../service/axiosInstance";
 import { IoIosSend } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { base_URL } from "../../../config/Config";
+import aiAvater from "../../../assets/aiAvater.png";
 
 const MessageList = ({
     messages,
@@ -349,7 +350,11 @@ const MessageList = ({
                         title={senderName}
                     >
                         {isAI ? (
-                            <span className="text-sm">🤖</span>
+                            <img
+                                src={aiAvater}
+                                alt="AI Assistant"
+                                className="h-full w-full object-cover"
+                            />
                         ) : senderImageSrc ? (
                             <img
                                 src={senderImageSrc}
@@ -375,7 +380,7 @@ const MessageList = ({
                     {/* ...............AI label................ */}
                     {isAI && (
                         <div className="text-xs font-semibold text-purple-600 mb-1">
-                            🤖 AI Assistant
+                            AI Assistant
                         </div>
                     )}
 
@@ -539,7 +544,7 @@ const MessageList = ({
                 <div className="flex mb-4 justify-start">
                     <div className="px-4 py-2 rounded-lg bg-purple-100 border border-purple-300">
                         <div className="text-xs font-semibold text-purple-600 mb-1">
-                            🤖 AI Assistant
+                            AI Assistant
                         </div>
                         <div className="flex items-center gap-1">
                             <span className="text-sm text-gray-600">AI is thinking</span>

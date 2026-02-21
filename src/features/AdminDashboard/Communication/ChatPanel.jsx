@@ -452,23 +452,9 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
               }
 
               {/* Button at the end */}
-              {
-                path === "charting-ai" && (
-                  <div className="ml-auto">
-                    <button
-                      type="button"
-                      onClick={handleResetCase}
-                      disabled={isInputDisabled}
-                      className="flex items-center gap-2 bg-primary rounded-lg p-3 disabled:opacity-50"
-                      title="Reset / Start a new case"
-                      aria-label="Reset / Start a new case"
-                    >
-                      {/* <CiCirclePlus size={24} className="text-white font-extrabold" /> */}
-                      <span className="text-white font-medium">New Case</span>
-                    </button>
-                  </div>
-                )
-              }
+              
+
+              
             </div>
 
 

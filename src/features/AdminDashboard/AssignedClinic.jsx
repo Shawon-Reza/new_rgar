@@ -126,7 +126,7 @@ const AssignedClinic = () => {
                         onClick={() => {
                             navigate('/admin/manage-clinic/roles')
                         }}
-                        className={`flex items-center sm:gap-2 text-white font-semibold py-2 px-2 sm:px-4 rounded-lg transition-colors hover:opacity-90 ${userProfileData?.role==="president"?"":"hidden"}`}
+                        className={`flex items-center sm:gap-2 text-white font-semibold py-2 px-2 sm:px-4 rounded-lg transition-colors hover:opacity-90 ${userProfileData?.role==="owner"?"":"hidden"}`}
                         style={{ backgroundColor: "var(--color-primary)" }}
                     >
                         <TbCategory2 size={20} />
