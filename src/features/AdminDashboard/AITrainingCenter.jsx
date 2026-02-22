@@ -41,7 +41,7 @@ export default function AITrainingCenter() {
 
         (async () => {
             try {
-                sessionStorage.setItem(storageKey, 'processing')
+                sessionStorage.setItem(storageKey, 'pending')
                 console.log('[AITrainingCenter] Calling dislike endpoint for id:', fromId)
                 const res = await axiosApi.post(`/api/v1/dislike/${fromId}/`)
                 console.log('[AITrainingCenter] Dislike POST response:', res?.status, res?.data)
@@ -132,7 +132,7 @@ export default function AITrainingCenter() {
             const fileObj = {
                 id: Date.now() + index,
                 name: file.name,
-                status: "processing",
+                status: "pending",
                 progress: Math.floor(Math.random() * 100),
                 file,
             }
@@ -272,16 +272,23 @@ export default function AITrainingCenter() {
                     )}
 
                     {/* Update AI Model Button */}
-                    <button
-                        onClick={handleUpdateAIModel}
-                        disabled={!isFormValid || uploadTrainingMutation.isPending}
-                        className={`w-full font-semibold py-3 rounded-lg transition-colors ${isFormValid
-                            ? "bg-teal-500 hover:bg-teal-600 text-white cursor-pointer"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                            }`}
-                    >
-                        {uploadTrainingMutation.isPending ? "Updating..." : "Update AI Model"}
-                    </button>
+                    <div className="relative group w-full">
+                        <button
+                            onClick={handleUpdateAIModel}
+                            disabled={!isFormValid || uploadTrainingMutation.isPending}
+                            className={`w-full font-semibold py-3 rounded-lg transition-colors ${isFormValid
+                                ? "bg-teal-500 hover:bg-teal-600 text-white cursor-pointer"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                }`}
+                        >
+                            {uploadTrainingMutation.isPending ? "Updating..." : "Update AI Model"}
+                        </button>
+                        {(!isFormValid || uploadTrainingMutation.isPending) && (
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                Please fill all data.
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* ...................................................................*/}
