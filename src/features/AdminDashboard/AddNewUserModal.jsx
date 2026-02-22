@@ -145,7 +145,7 @@ const AddNewUserModal = ({
           // Handle both string arrays and object arrays
           let normalizedClinics = []
           let normalizedClinicIds = []
-          
+
           if (Array.isArray(userData.clinics)) {
             normalizedClinics = userData.clinics.map((c) => {
               // If clinic is object with id/name
@@ -155,7 +155,7 @@ const AddNewUserModal = ({
               // If clinic is a string
               return c
             }).filter(Boolean)
-            
+
             normalizedClinicIds = userData.clinics.map((c) => {
               // If clinic is object with id
               if (typeof c === 'object' && c !== null) {
@@ -404,7 +404,7 @@ const AddNewUserModal = ({
                   value={form.lastName}
                   onChange={update('lastName')}
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Last name"
+                  placeholder="Last name..."
                   required
                 />
               </div>
@@ -430,7 +430,7 @@ const AddNewUserModal = ({
               <div className="relative">
                 <FiPhone className="absolute left-3 top-2.5 text-gray-500" />
                 <input
-                  type="tel"
+                  type="number"
                   value={form.phone}
                   onChange={update('phone')}
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -573,7 +573,7 @@ const AddNewUserModal = ({
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
-                  
+
                   {form.subroleId && (
                     <div className="px-3 py-2 bg-teal-50 border border-teal-200 rounded-lg">
                       <div className="flex items-center justify-between">
@@ -614,11 +614,10 @@ const AddNewUserModal = ({
                                 }))
                                 setSearchSubrole('')
                               }}
-                              className={`w-full text-left px-3 py-2 rounded-lg text-sm border transition ${
-                                form.subroleId === subrole.id
-                                  ? 'bg-teal-100 text-teal-700 border-teal-300'
-                                  : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-                              }`}
+                              className={`w-full text-left px-3 py-2 rounded-lg text-sm border transition ${form.subroleId === subrole.id
+                                ? 'bg-teal-100 text-teal-700 border-teal-300'
+                                : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                }`}
                             >
                               {subrole.name}
                             </button>
@@ -628,10 +627,10 @@ const AddNewUserModal = ({
                             s.is_active &&
                             s.name.toLowerCase().includes(searchSubrole.toLowerCase())
                         ).length === 0 && (
-                          <span className="text-sm text-gray-500 p-2">
-                            No sub roles found
-                          </span>
-                        )}
+                            <span className="text-sm text-gray-500 p-2">
+                              No sub roles found
+                            </span>
+                          )}
                       </div>
                     ) : (
                       <span className="text-sm text-gray-500">No data available</span>
@@ -662,14 +661,22 @@ const AddNewUserModal = ({
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={!canSubmit || createUserMutation.isPending || loadingUserData}
-              className={`px-5 py-2 rounded-lg text-white font-semibold transition ${!canSubmit || createUserMutation.isPending || loadingUserData ? 'bg-primary cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'
-                }`}
-            >
-              {loadingUserData ? 'Loading...' : createUserMutation.isPending ? (mode === 'edit' ? 'Updating…' : 'Adding…') : (mode === 'edit' ? 'Update User' : 'Add User')}
-            </button>
+            <div className="relative group">
+              <button
+                type="submit"
+                disabled={!canSubmit || createUserMutation.isPending || loadingUserData}
+                className={`px-5 py-2 rounded-lg text-white font-semibold transition ${!canSubmit || createUserMutation.isPending || loadingUserData ? 'bg-primary cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'
+                  }`}
+              >
+                {loadingUserData ? 'Loading...' : createUserMutation.isPending ? (mode === 'edit' ? 'Updating…' : 'Adding…') : (mode === 'edit' ? 'Update User' : 'Add User')}
+              </button>
+              {/* ==================================Hover display ==============================\\ */}
+              {(!canSubmit || createUserMutation.isPending || loadingUserData) && (
+                <div className="absolute bottom-full left-0 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                  Please Fill all the information.
+                </div>
+              )}
+            </div>
           </div>
         </form>
       </div>

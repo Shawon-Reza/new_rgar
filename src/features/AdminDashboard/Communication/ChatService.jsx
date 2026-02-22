@@ -247,3 +247,4 @@ export const connectWebSocketForNotifications = ({ onMessage, onSeen }) => {
         getUrl: () => socket?.url
     };
 };
+
