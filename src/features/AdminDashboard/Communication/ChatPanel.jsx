@@ -437,7 +437,7 @@ console.log("===============================:::::::::::",roomMembersData)
                   />
                 )}
                 <div>
-                  <div className="font-semibold">{safeUser.name}</div>
+                  <div className="font-semibold">{path === "charting-ai" ? "Chartly AI" : safeUser.name}</div>
                   <div className="text-xs text-primary font-medium">{safeUser.role}</div>
                 </div>
               </div>

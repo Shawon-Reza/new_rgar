@@ -41,6 +41,8 @@ const PromtModifier = () => {
         },
     });
 
+    console.log("=================================:",modifierData)
+
     const modifierList = Array.isArray(modifierData?.data) ? modifierData.data : [];
     const selectedModifier =
         modifierList.find((item) => String(item?.id) === String(selectedModifierId)) || null;

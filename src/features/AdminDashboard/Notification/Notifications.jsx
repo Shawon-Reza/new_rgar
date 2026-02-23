@@ -54,8 +54,10 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
 
   // ====================================== Mark Single Notification as Seen ====================================== // 
   const { mutate: markNotificationAsSeen } = useMutation({
-    mutationFn: async (id) => {
-      const response = await axiosApi.post(`/api/v1/notifications/${id}/seen/`)
+    mutationFn: async ({ id, source }) => {
+      // Backend expects type: "notification" when source is "notification", otherwise "ai_ticket"
+      const body = { type: source === 'notification' ? 'notification' : 'ai_ticket' }
+      const response = await axiosApi.post(`/api/v1/notifications/web/${id}/seen/`, body)
       console.log('Mark notification as seen response:', response.data)
       return response.data
     },
@@ -170,7 +172,7 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
               key={notification.id}
               onClick={(e) => {
                 e.stopPropagation()
-                markNotificationAsSeen(notification.id)
+                markNotificationAsSeen({ id: notification.id, source: notification.source })
                 handleNotificationClick(notification)
               }}
               className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${!notification.is_seen ? 'border-l-4 border-blue-500' : ''

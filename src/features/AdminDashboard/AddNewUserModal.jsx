@@ -440,27 +440,29 @@ const AddNewUserModal = ({
             </Field>
 
             {/* Password */}
-            <Field label={mode === 'edit' ? 'Change Password (leave empty to keep current)' : 'Set Password'} icon={FiLock}>
-              <div className="relative">
-                <FiLock className="absolute left-3 top-2.5 text-gray-500" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={form.password}
-                  onChange={update('password')}
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="••••••••"
-                  required={mode === 'create'}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => !s)}
-                  className="absolute right-3 top-2.5 text-gray-500"
-                  aria-label="Toggle password visibility"
-                >
-                  {showPassword ? <FiEyeOff /> : <FiEye />}
-                </button>
-              </div>
-            </Field>
+            {mode !== 'edit' && (
+              <Field label="Set Password" icon={FiLock}>
+                <div className="relative">
+                  <FiLock className="absolute left-3 top-2.5 text-gray-500" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={update('password')}
+                    className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="••••••••"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-2.5 text-gray-500"
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+              </Field>
+            )}
 
             {/* Role */}
             <Field label="Role" icon={FiBriefcase}>
