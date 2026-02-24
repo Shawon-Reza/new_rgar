@@ -15,7 +15,7 @@ const PromptModifySection = () => {
             .replace(/`([^`]*)`/g, "$1")
             .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
             .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-            .replace(/[*_~>#-]+/g, "")
+            // .replace(/[*_~>#-]+/g, "")
             .replace(/\n{3,}/g, "\n\n")
             .trim();
     };
