@@ -104,7 +104,7 @@ const AssignedClinic = () => {
                         <FiUser className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" />
                         <div>
                             <p className="text-xs text-gray-500 font-medium">Staff Members</p>
-                            <p className="text-sm text-gray-700">{clinic.staffMembers} members</p>
+                            <p className="text-sm text-gray-700">{clinic.active_members} members</p>
                         </div>
                     </div>
                 </div>
@@ -116,7 +116,7 @@ const AssignedClinic = () => {
         <div className="min-h-screen font-sans">
             {/* Header */}
             <div className="border-b border-gray-200 sticky top-0 z-30">
-                <div className="px-6 py-8 bg-[#F0FDF4] flex justify-between">
+                <div className="px-6 py-8 flex justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Assigned Clinics</h1>
                         <p className="text-gray-600 mt-1">View your assigned clinic details</p>
