@@ -214,7 +214,7 @@ const ClinicManagement = () => {
                         <FiUser className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" />
                         <div>
                             <p className="text-xs text-gray-500 font-medium">Staff Members</p>
-                            <p className="text-sm text-gray-700">{clinic.staffMembers} members</p>
+                            <p className="text-sm text-gray-700">{clinic.active_members} members</p>
                         </div>
                     </div>
                 </div>
