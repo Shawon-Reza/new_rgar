@@ -297,7 +297,7 @@ const Communication = () => {
 
 
     return (
-        <div className=" mx-auto">
+        <div className="mx-auto">
             {/* Header */}
             <section className="text-secondary mb-2">
                 <h2 className="text-2xl lg:text-3xl font-bold">Communication Hub</h2>
@@ -305,9 +305,9 @@ const Communication = () => {
             </section>
 
             {/* Main Layout */}
-            <section className="flex gap-6 h-[calc(100vh-190px)]">
+            <section className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-auto lg:h-[calc(100vh-190px)]">
                 {/* ......................Sidebar.................... */}
-                <section className="w-[40%] xl:w-[25%] h-full bg-white/70 rounded-xl shadow-md p-4 space-y-4 border border-gray-300">
+                <section className="w-full lg:w-[40%] xl:w-[25%] h-auto lg:h-full bg-white/70 rounded-xl shadow-md p-3 sm:p-4 space-y-4 border border-gray-300">
                     {/* Tabs */}
                     <div className="flex justify-between gap-3 pb-2">
                         <button
@@ -331,16 +331,16 @@ const Communication = () => {
                     </div>
 
                     {/* New Group / New Message Buttons */}
-                    <div className={`${activeTab === "allChat" ? "" : "hidden"} flex justify-between gap-3 pb-2`}>
+                    <div className={`${activeTab === "allChat" ? "" : "hidden"} flex flex-wrap sm:flex-nowrap justify-between gap-2 sm:gap-3 pb-2`}>
                         <button
                             onClick={() => setShowCreateGroupModal(true)}
-                            className={`pb-1 font-medium text-primary border-2 rounded-lg px-2 border-primary ${path === "user-management" ? "hidden" : ""} ${accessControl?.communicationAccess ? "" : "hidden"}`}
+                            className={`pb-1 font-medium text-primary border-2 rounded-lg px-2 sm:px-3 border-primary flex-1 sm:flex-none ${path === "user-management" ? "hidden" : ""} ${accessControl?.communicationAccess ? "" : "hidden"}`}
                         >
                             New Group
                         </button>
                         <button
                             onClick={() => setShowCreateMessageModal(true)}
-                            className={`pb-1 font-medium text-primary border-2 rounded-lg px-2 border-primary ${path === "user-management" ? "hidden" : ""}`}
+                            className={`pb-1 font-medium text-primary border-2 rounded-lg px-2 sm:px-3 border-primary flex-1 sm:flex-none ${path === "user-management" ? "hidden" : ""}`}
                         >
                             New Message
                         </button>
@@ -361,7 +361,7 @@ const Communication = () => {
                         <select
                             value={selectedRole}
                             onChange={(e) => handleRoleFilterChange(e.target.value)}
-                            className="border border-gray-300 rounded-lg px-2 py-2 text-sm"
+                            className="border border-gray-300 rounded-lg px-2 py-2 text-sm w-[90px] sm:w-auto"
                         >
                             {roles.map((role) => (
                                 <option key={role} value={role}>
@@ -372,7 +372,7 @@ const Communication = () => {
                     </div>
 
                     {/* ........................Chat List.......................... */}
-                    <div className={`space-y-2 overflow-auto h-[calc(100vh-440px)] `}>
+                    <div className="space-y-2 overflow-auto max-h-[320px] lg:max-h-none lg:h-[calc(100vh-440px)]">
 
 
                         <div className={`text-center text-gray-500 ${activeTab === "aiAssistant" ? "" : "hidden"}`}>
@@ -513,7 +513,7 @@ const Communication = () => {
                 </section>
 
                 {/* ............................Chat Panel............................. */}
-                <section className="w-[60%] xl:w-[75%] h-full bg-white/70 rounded-lg shadow-md p-4 ">
+                <section className="w-full lg:w-[60%] xl:w-[75%] h-[65vh] sm:h-[70vh] lg:h-full bg-white/70 rounded-lg shadow-md p-2 sm:p-4">
                     <ChatPanel
                         chatRoom={selectedChat?.room_id ?? null}
                         roomType={selectedChat?.type ?? null}

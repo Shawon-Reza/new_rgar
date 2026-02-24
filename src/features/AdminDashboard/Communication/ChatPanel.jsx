@@ -418,7 +418,7 @@ console.log("===============================:::::::::::",roomMembersData)
   console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^::::::', headerAvatar)
 
   return (
-    <div className={`flex flex-col h-full border border-gray-300 rounded-lg bg-white/50 ${path == "charting-ai" ? "min-h-[calc(100vh-130px)] max-h-[calc(100vh-100px)]" : ""}`}>
+    <div className={`flex flex-col h-full border border-gray-300 rounded-lg bg-white/50 overflow-hidden ${path == "charting-ai" ? "min-h-[calc(100vh-130px)] max-h-[calc(100vh-100px)]" : ""}`}>
       {!chatRoom ? (
         <div className="flex-1 flex items-center justify-center text-gray-500 bg-white/50 rounded-lg">
           Select a chat
@@ -426,9 +426,9 @@ console.log("===============================:::::::::::",roomMembersData)
       ) : (
         <>
           {/* Header */}
-          <div className="p-4 border-b border-gray-300 flex justify-between items-center relative">
+          <div className="p-3 sm:p-4 border-b border-gray-300 flex justify-between items-center relative">
             <div className="flex gap-3 items-start justify-between w-full">
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-2 min-w-0">
                 {avatarNode || (
                   <img
                     src={headerAvatar}
@@ -436,8 +436,8 @@ console.log("===============================:::::::::::",roomMembersData)
                     alt=""
                   />
                 )}
-                <div>
-                  <div className="font-semibold">{path === "charting-ai" ? "Chartly AI" : safeUser.name}</div>
+                <div className="min-w-0">
+                  <div className="font-semibold truncate max-w-[150px] sm:max-w-[260px]">{path === "charting-ai" ? "Chartly AI" : safeUser.name}</div>
                   <div className="text-xs text-primary font-medium">{safeUser.role}</div>
                 </div>
               </div>
@@ -493,10 +493,10 @@ console.log("===============================:::::::::::",roomMembersData)
           />
 
           {/* ........................................................Input Area For send text................................................ */}
-          <div className="p-4 border-t border-gray-300">
+          <div className="p-2 sm:p-4 border-t border-gray-300">
             {/* ====================================== Forwarded message display ==================================== */}
             {forwardedDraft && (
-              <div className="mb-3 rounded-lg border border-gray-300 bg-gray-50 p-3 max-h-[150px] overflow-y-auto">
+              <div className="mb-3 rounded-lg border border-gray-300 bg-gray-50 p-3 max-h-[140px] overflow-y-auto">
                 <div className="flex items-start justify-between gap-2">
                   <div className="text-xs font-semibold text-gray-600">Forwarded message details</div>
                   <button
@@ -532,7 +532,7 @@ console.log("===============================:::::::::::",roomMembersData)
                 ))}
               </div>
             )}
-            <div className="flex gap-3 w-full min-w-0">
+            <div className="flex items-end gap-2 sm:gap-3 w-full min-w-0">
 
               {/* ===================================== File upload button for group and private ================================== */}
               {(roomType === "group" || roomType === "private" || roomType === "ai") && (
@@ -548,7 +548,7 @@ console.log("===============================:::::::::::",roomMembersData)
                   <button
                     onClick={handleFileInputClick}
                     disabled={isInputDisabled}
-                    className="text-gray-600 hover:text-gray-800 disabled:opacity-50 cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 disabled:opacity-50 cursor-pointer shrink-0"
                     title="Attach files"
                   >
                     <FiPaperclip size={24} />
@@ -609,14 +609,14 @@ console.log("===============================:::::::::::",roomMembersData)
                   onChange={handleInputChange}
                   onKeyDown={handleInputKeyDown}
                   placeholder={inputPlaceholder}
-                  className={`flex-1 outline-none resize-none overflow-y-auto border border-gray-300 rounded-lg p-2 min-w-0 text-base min-h-[100px] ${data?.pages[0]?.room?.chat_blocked || data?.pages[0]?.room?.can_send === false ? 'placeholder:text-red-500' : ''}`}
-                  style={{ minHeight: "75px", maxHeight: "250px" }}
+                  className={`flex-1 outline-none resize-none overflow-y-auto border border-gray-300 rounded-lg p-2 min-w-0 text-base min-h-[70px] sm:min-h-[100px] ${data?.pages[0]?.room?.chat_blocked || data?.pages[0]?.room?.can_send === false ? 'placeholder:text-red-500' : ''}`}
+                  style={{ minHeight: "70px", maxHeight: "220px" }}
                 />
               )}
               <button
                 onClick={handleSendMessage}
                 disabled={(!inputMessage.trim() && attachments.length === 0) || isInputDisabled}
-                className="disabled:opacity-50 cursor-pointer"
+                className="disabled:opacity-50 cursor-pointer shrink-0"
                 title="Send Messages"
               >
                 <FiSend size={24} />
