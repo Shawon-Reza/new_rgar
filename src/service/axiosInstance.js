@@ -41,6 +41,20 @@ axiosApi.interceptors.request.use(
 let isRefreshing = false;
 let failedQueue = [];
 
+// ======================================= Redirect login page if another device logged in =======================================\\
+const shouldForceLogout = (payload) => {
+  const detail = payload?.detail;
+  return (
+    typeof detail === "string" &&
+    /logged in from another device|please login again/i.test(detail)
+  );
+};
+
+const redirectToLogin = () => {
+  localStorage.removeItem("auth");
+  window.location.href = "/login";
+};
+
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
     error ? prom.reject(error) : prom.resolve(token);
@@ -49,16 +63,27 @@ const processQueue = (error, token = null) => {
 };
 
 axiosApi.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (shouldForceLogout(response?.data)) {
+      redirectToLogin();
+      return Promise.reject(new Error(response.data.detail));
+    }
+
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
+
+    if (shouldForceLogout(error?.response?.data)) {
+      redirectToLogin();
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       const auth = JSON.parse(localStorage.getItem("auth"));
 
       if (!auth?.refresh) {
-        localStorage.removeItem("auth");
-        window.location.href = "/login";
+        redirectToLogin();
         return Promise.reject(error);
       }
 
@@ -98,8 +123,7 @@ axiosApi.interceptors.response.use(
         return axiosApi(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        localStorage.removeItem("auth");
-        window.location.href = "/login";
+        redirectToLogin();
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
