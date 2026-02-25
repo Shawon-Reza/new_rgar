@@ -162,7 +162,11 @@ const CreateNewMessageModal = ({ onClose }) => {
                                     <div className="text-gray-500 text-sm py-4">No users found</div>
                                 ) : (
                                     userList?.results.map(user => (
-                                        <div key={user.id} className="flex items-center justify-between gap-3 py-2 hover:bg-gray-50 rounded-lg px-2">
+                                        <div
+                                            key={user.id}
+                                            className="flex items-center justify-between gap-3 py-2 hover:bg-gray-50 rounded-lg px-2 cursor-pointer"
+                                            onClick={() => handleUserToggle(user.id)}
+                                        >
                                             <div className="flex items-center gap-2">
                                                 <img src={`${base_URL}${user.image}`} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
                                                 <span className="font-medium text-sm">{user.name}</span>
@@ -178,6 +182,7 @@ const CreateNewMessageModal = ({ onClose }) => {
                                                     type="checkbox"
                                                     className="w-5 h-5 rounded border-2 border-teal-500 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer"
                                                     checked={selectedUsers.includes(user.id)}
+                                                    onClick={(e) => e.stopPropagation()}
                                                     onChange={() => handleUserToggle(user.id)}
                                                 />
                                             </div>
