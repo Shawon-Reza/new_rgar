@@ -250,7 +250,7 @@ const RolesTypes = () => {
                                             subroleIds: selectedSubrolesToRemove,
                                             clinicTypeId: selectedClinicType,
                                         };
-                                        console.log("[RolesTypes] Remove subroles payload:", payload);
+                                 
                                         removeSubroleMutation.mutate(payload);
                                     }
                                 }}

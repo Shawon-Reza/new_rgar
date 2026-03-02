@@ -7,7 +7,6 @@ import { toast } from 'react-toastify'
 const ChangePasswordModal = ({ isOpen, onClose, userId, userName }) => {
   if (!isOpen) return null
 
-  console.log("From modal:",userId)
 
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -21,8 +20,7 @@ const ChangePasswordModal = ({ isOpen, onClose, userId, userName }) => {
       return response.data
     },
     onSuccess: (data) => {
-      console.log('Password changed successfully:', data)
-    //   alert('Password changed successfully!')
+
       toast.success('Password changed successfully!')
       handleClose()
     },

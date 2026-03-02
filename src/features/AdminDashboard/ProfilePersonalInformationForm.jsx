@@ -59,9 +59,6 @@ const ProfilePersonalInformationForm = () => {
       }
       return axiosApi.patch(`/api/v1/users/${userProfileData.id}/Infoupdate/`, payload)
     },
-    onSuccess: (data) => {
-      console.log("[ProfileUpdate] Mutation successful:", data)
-    },
     onError: (error) => {
       console.error("[ProfileUpdate] Mutation error:", error)
     }
@@ -136,12 +133,12 @@ const ProfilePersonalInformationForm = () => {
       payload.append("picture", formData.avatarFile)
     }
 
-    console.log("[ProfileUpdate] Sending payload:", Object.fromEntries(payload))
+   
 
     try {
       setIsLoading(true)
       await updateProfileMutation.mutateAsync(payload)
-      console.log("[ProfileUpdate] Changes saved successfully")
+
       setSuccessMessage("Changes saved successfully!")
       setOriginalData({ ...formData })
       setTimeout(() => setSuccessMessage(""), 3000)

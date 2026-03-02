@@ -13,12 +13,10 @@ const GivenAssessmentViewFromUsers = () => {
         queryKey: ['candidateAssessments'],
         queryFn: async () => {
             const response = await axiosApi.get('/api/v1/candidate/assessments/')
-            console.log('[GivenAssessmentViewFromUsers] API Response:', response.data)
             return response.data
         },
     })
 
-    console.log('[GivenAssessmentViewFromUsers] Assessments Data:((((((((((((((((((((((((((((((((((((((((', assessmentsData?.data?.completed?.results)
 
 
     if (isLoading) {

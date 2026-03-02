@@ -23,16 +23,11 @@ const AiTrainingChat = () => {
         queryKey: ['aiTrainingRoom'],
         queryFn: async () => {
             const response = await axiosApi.post('/api/v1/mytrainingrooms/')
-            console.log('[AiTrainingChat] Room data:', response.data)
             return response.data
-        },
-        onError: (err) => {
-            console.error('[AiTrainingChat] Error fetching room:', err)
         },
     })
 
     const chatRoom = roomData?.data?.room_id
-    console.log(chatRoom)
 
     // .......................Socket Connection.........................\\
     useEffect(() => {
@@ -42,15 +37,11 @@ const AiTrainingChat = () => {
             roomId: chatRoom,
 
             onMessage: (payload) => {
-                console.log("[AiTrainingChat] WebSocket payload received:", payload)
-
                 // Handle different message structures from backend
                 const newMessage = payload.message || payload.data || payload;
 
                 // Skip if not a valid message object
                 if (!newMessage || !newMessage.id) return;
-
-                console.log("[AiTrainingChat] New message processed:", newMessage)
 
                 // If AI message received, stop typing indicator
                 if (newMessage.is_ai) {
@@ -75,17 +66,10 @@ const AiTrainingChat = () => {
         return () => socket.close();
     }, [chatRoom]);
 
-    // Console logging for component initialization
-    useEffect(() => {
-        console.log("[AiTrainingChat] Component Initialized")
-        console.log("[AiTrainingChat] Chat Room ID:", chatRoom)
-    }, [])
-
 
     // Handle send message
     const handleSendMessage = async () => {
         if (messageInput.trim() === "" || !chatRoom) {
-            console.log("[AiTrainingChat] Empty message or no room, not sending")
             return
         }
 
@@ -98,14 +82,11 @@ const AiTrainingChat = () => {
             const formData = new FormData();
             formData.append("prompt", messageText);
             // {{baseurl}}/api/v1/mytrainingrooms/11/ask/
-
-            console.log("formData:", formData)
             await axiosApi.post(`/api/v1/mytrainingrooms/${chatRoom}/ask/`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            console.log("[AiTrainingChat] Message sent successfully")
 
             // Scroll to bottom after sending message
             requestAnimationFrame(() => {
@@ -114,7 +95,6 @@ const AiTrainingChat = () => {
                 }
             });
         } catch (err) {
-            console.error("[AiTrainingChat] Send message failed:", err);
             setIsAiTyping(false)
             // Optionally restore message on error
             setMessageInput(messageText);
@@ -125,13 +105,6 @@ const AiTrainingChat = () => {
 
     // Handle message reactions
     const handleReaction = async (messageId, reaction) => {
-        console.groupCollapsed(`👍 Reacting to message ${messageId}`)
-        console.log("Message ID:", messageId)
-        console.log("Reaction:", reaction)
-        console.log("Endpoint:", `/api/v1/messages/${messageId}/react/`)
-        console.log("Payload:", { reaction })
-        console.groupEnd()
-
         // Update local state immediately for better UX
         setReactions(prev => {
             const currentReaction = prev[messageId]
@@ -148,10 +121,7 @@ const AiTrainingChat = () => {
                 reaction: reaction // "like" or "dislike"
             })
 
-            console.log("✅ Reaction successful:", response?.status, response?.data)
-
         } catch (err) {
-            console.error("❌ Reaction failed:", err?.response?.status, err?.response?.data || err?.message)
             // Revert state on error
             setReactions(prev => ({
                 ...prev,
@@ -162,14 +132,11 @@ const AiTrainingChat = () => {
 
     // Handle attachment click
     const handleAttachment = () => {
-        console.log("[AiTrainingChat] Attachment button clicked")
         fileInputRef.current?.click()
     }
 
     // Handle microphone click
     const handleMicrophone = () => {
-        console.log("[AiTrainingChat] Microphone button clicked")
-        console.log("[AiTrainingChat] Starting voice recording...")
     }
 
     // Loading state

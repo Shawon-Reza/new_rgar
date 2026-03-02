@@ -16,13 +16,10 @@ const AssignedClinic = () => {
         queryKey: ['clinics-assigned'],
         queryFn: async () => {
             const response = await axiosApi.get('/api/v1/clinics/')
-            console.log('[Clinics API Response]:', response.data)
+
             return Array.isArray(response.data) ? response.data : response.data?.results || response.data?.data || []
         },
     })
-
-    console.log(clinics)
-
 
     // ============ CLINIC CARD COMPONENT ============
     const ClinicCard = ({ clinic }) => (

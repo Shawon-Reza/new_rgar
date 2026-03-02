@@ -1,14 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axiosApi from '../../../service/axiosInstance';
 import { base_URL } from '../../../config/Config';
 import { toast } from 'react-toastify';
 import { queryClient } from '../../../main';
 
 const BlockMemberModal = ({ onClose, roomId, roomMembers, room_type }) => {
-  console.log("Block Member Modal opened with Room ID:", roomId);
-  console.log("Block Member Modal opened with Room Type:", room_type);
-
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -21,7 +18,6 @@ const BlockMemberModal = ({ onClose, roomId, roomMembers, room_type }) => {
 
   // Handle member selection
   const handleMemberToggle = (memberId) => {
-    console.log("Member toggled:", memberId);
     if (selectedMembers.includes(memberId)) {
       setSelectedMembers(selectedMembers.filter(id => id !== memberId));
     } else {
@@ -29,29 +25,20 @@ const BlockMemberModal = ({ onClose, roomId, roomMembers, room_type }) => {
     }
   };
 
-  // Log selected members and room ID
-  useEffect(() => {
-    console.log("Selected Members to Block:", selectedMembers);
-    console.log("Room ID:", roomId);
-  }, [selectedMembers, roomId]);
-
   // Mutation for toggling block/unblock on double-click
   const toggleBlockMutation = useMutation({
     mutationFn: async (userId) => {
-      console.log("Toggling block for user:", userId);
       const payload = { user_id: userId };
       const response = await axiosApi.post(`/api/v1/rooms/${roomId}/toggle-block/`, payload);
       return response.data;
     },
-    onSuccess: (data) => {
-      console.log('Member block status toggled successfully:', data);
+    onSuccess: () => {
       toast.success('Member block status updated');
       // Refresh the room members list
       queryClient.invalidateQueries({ queryKey: ['roomMembers'] });
       queryClient.invalidateQueries({ queryKey: ['myRooms'] });
     },
     onError: (error) => {
-      console.error('Error toggling block status:', error);
       const msg = error?.response?.data?.message || error?.message || 'Failed to toggle block status';
       toast.error(msg);
     },
@@ -60,23 +47,19 @@ const BlockMemberModal = ({ onClose, roomId, roomMembers, room_type }) => {
   // Mutation for blocking members
   const blockMemberMutation = useMutation({
     mutationFn: async () => {
-      console.log("Blocking members:", selectedMembers);
-
       // Block each member individually
       const promises = selectedMembers.map(userId => {
         const payload = {
           user_id: userId,
           action: "block"
         };
-        console.log("Blocking user with payload:", payload);
         return axiosApi.post(`/api/v1/rooms/${roomId}/member/block/`, payload);
       });
 
       const results = await Promise.all(promises);
       return results.map(res => res.data);
     },
-    onSuccess: (data) => {
-      console.log('Members blocked successfully:', data);
+    onSuccess: () => {
       toast.success('Members blocked successfully');
       // Refresh the room members list
       queryClient.invalidateQueries({ queryKey: ['roomMembers'] });
@@ -84,7 +67,6 @@ const BlockMemberModal = ({ onClose, roomId, roomMembers, room_type }) => {
       onClose();
     },
     onError: (error) => {
-      console.error('Error blocking members:', error);
       const msg = error?.response?.data?.message || error?.message || 'Failed to block members';
       toast.error(msg);
     },
@@ -92,7 +74,6 @@ const BlockMemberModal = ({ onClose, roomId, roomMembers, room_type }) => {
 
   // Handle double-click to toggle block/unblock
   const handleToggleBlock = (userId) => {
-    console.log("Double-click - Toggling block for user:", userId);
     toggleBlockMutation.mutate(userId);
   };
 
@@ -101,8 +82,6 @@ const BlockMemberModal = ({ onClose, roomId, roomMembers, room_type }) => {
       toast.warning('Please select at least one member to block');
       return;
     }
-    console.log("Final Selected Members to Block:", selectedMembers);
-    console.log("Final Room ID:", roomId);
     blockMemberMutation.mutate();
   };
 

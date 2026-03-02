@@ -10,9 +10,7 @@ const Charting_AI = () => {
             const response = await axiosApi.post('/api/v1/rooms/ai_charting/me/')
             return response.data
         },
-        onSuccess: (data) => {
-            console.log('[Charting_AI] Room created/fetched successfully:', data)
-        },
+       
         onError: (error) => {
             console.error('[Charting_AI] Error creating/fetching room:', error)
         }
@@ -26,7 +24,6 @@ const Charting_AI = () => {
     }, [])
 
     // Log mutation data if available
-    console.log('[Charting_AI] Mutation data==============================::::::', createAiChartingRoomMutation.data)
 
     // Show loading state
     if (createAiChartingRoomMutation.isPending) {

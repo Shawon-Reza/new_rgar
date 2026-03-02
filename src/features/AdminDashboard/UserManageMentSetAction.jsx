@@ -14,9 +14,6 @@ const UserManageMentSetAction = ({ isOpen, onClose, userId, permissionData, perm
         assessment: false
     })
     const [togglingGroup, setTogglingGroup] = useState(null)
-    
-    console.log("[UserManageMentSetAction] permissionData:", permissionData?.groupPerms)
-    console.log("[UserManageMentSetAction] UUserID:", userId)
 
     // Mutation for toggling permissions
     const togglePermissionMutation = useMutation({
@@ -26,7 +23,6 @@ const UserManageMentSetAction = ({ isOpen, onClose, userId, permissionData, perm
                 group: group,
                 enabled: enabled
             }
-            console.log('[UserManageMentSetAction] Toggling permission:', payload)
             const response = await axiosApi.post('/api/v1/permissions/groups/toggle/', payload)
             return response.data
         },

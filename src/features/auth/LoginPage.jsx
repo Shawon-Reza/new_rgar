@@ -28,9 +28,7 @@ const LoginPage = () => {
                 password,
                 ...getDeviceInfo(),
             };
-            console.log(payload)
             const response = await axios.post(`${base_URL}/api/v1/login/`, payload);
-            console.log(response)
             toast.success('Login successful');
             // Saved auth tokens if returned
             if (response?.data) {
@@ -46,7 +44,6 @@ const LoginPage = () => {
         } catch (error) {
             const message = error?.response?.data?.message || 'Login failed. Please check your credentials and try again.';
             toast.error(message);
-            console.log(error?.response?.data?.message)
         } finally {
             setIsLoading(false);
         }

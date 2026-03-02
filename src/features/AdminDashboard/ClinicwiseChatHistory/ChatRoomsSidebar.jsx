@@ -1,16 +1,8 @@
-import { useEffect } from "react"
 import ChatPanel from "../Communication/ChatPanel"
 import Communication from "../Communication/Communication"
 import ReactMarkdown from 'react-markdown';
 
 const ChatRoomsSidebar = ({ roomsData, roomsLoading, roomsError, selectedRoom, onSelectRoom }) => {
-    // ============ LOG SELECTED ROOM ID ============
-    useEffect(() => {
-        if (selectedRoom) {
-            console.log('[Selected Chat Room ID]:', selectedRoom.room_id)
-            console.log('[Selected Chat Room Details]:', selectedRoom)
-        }
-    }, [selectedRoom])
     return (
         <div className="lg:col-span-1 bg-white/60 rounded-lg shadow-sm border border-gray-200">
             <div className="p-4 border-b border-gray-200">

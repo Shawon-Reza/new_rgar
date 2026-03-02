@@ -10,9 +10,6 @@ const AdminAndPresedentDashboardDetails = ({ cardData }) => {
     const [dashboardData, setDashboardData] = useState(null)
     const [loading, setLoading] = useState(true)
     const { userProfileData } = useGetUserProfile();
-
-    console.log("Card Data===================================================:", cardData)
-    console.log("userProfileData===================================================:", userProfileData)
     // ============ MOCK DATA - Replace with backend API calls ============
     const mockDashboardStats = {
         totalUsers: cardData?.total_user || 0,
@@ -35,13 +32,10 @@ const AdminAndPresedentDashboardDetails = ({ cardData }) => {
 
     // ============ LIFECYCLE HOOKS ============
     useEffect(() => {
-        console.log("[AdminDashboard] Fetching dashboard stats from backend...")
-
         // Simulate API delay - Replace with actual API call
         setTimeout(() => {
             setDashboardData(mockDashboardStats)
             setLoading(false)
-            console.log("[AdminDashboard] Dashboard Stats Loaded:", mockDashboardStats)
         }, 500)
     }, [])
 

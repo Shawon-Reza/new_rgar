@@ -17,8 +17,6 @@ const ActionsDropdown = ({ showActions, onEditDetails, onAddMember, onBlockMembe
   const [showBlockMemberModal, setShowBlockMemberModal] = useState(false);
 
   const { userProfileData } = useGetUserProfile();
-
-  console.log("CHat Info >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>:", chatInfo)
   const myUserId = userProfileData?.id;
 
 
@@ -26,11 +24,6 @@ const ActionsDropdown = ({ showActions, onEditDetails, onAddMember, onBlockMembe
   const roomId = chatInfo?.id;
   const clinic_id = chatInfo?.clinic_id;
   const room_type = chatInfo?.type;
-
-
-  console.log("Room Id from dropdown :", roomId)
-  console.log("Room room_type from dropdown :", room_type)
-  console.log("Room room_type from chatInfo======================== :", chatInfo)
 
 
   const isPrivate = chatInfo?.type === 'private';
@@ -42,31 +35,26 @@ const ActionsDropdown = ({ showActions, onEditDetails, onAddMember, onBlockMembe
     queryKey: ['clinicMembers_for_addMembers', clinic_id],
     queryFn: async () => {
       const res = await axiosApi.get(`/api/v1/chat/clinic/members/?clinic_id=${clinic_id}`);
-      console.log("Clinic Members Data:", res.data);
       return res.data;
     },
     enabled: !!clinic_id, // Only fetch if clinic_id exists
     keepPreviousData: true,
   });
-  console.log("Clinic Members:", clinicMembers?.results);
 
   // ........................................Fetch Chat Room Members*.......................................... //
   const { data: roomMembers, isLoading: isLoadingRoomMembers, error: roomMembersError } = useQuery({
     queryKey: ['roomMembers', roomId],
     queryFn: async () => {
       const res = await axiosApi.get(`/api/v1/rooms/${roomId}/members/`);
-      console.log("Room Members Data:", res.data);
       return res.data;
     },
     enabled: !!roomId, // Only fetch if roomId exists
     keepPreviousData: true,
   });
-  console.log("Room Members:================================================================", roomMembers?.results);
   // ...........................................Get Private Chat Another Member ID................................... //
   const privetChatAnotherMemberId = isPrivate
     ? roomMembers?.results?.find(member => member.id !== myUserId)?.id
     : null;
-  console.log("Room privetChatAnotherMemberId:================================================================", privetChatAnotherMemberId);
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //..............................................Block/Unblock Chat Mutation..............................................//
@@ -78,22 +66,18 @@ const ActionsDropdown = ({ showActions, onEditDetails, onAddMember, onBlockMembe
         user_id: privetChatAnotherMemberId, // or however the other user ID is stored in chatInfo
         action: action, // "block" or "unblock"
       };
-
-      console.log("Block/Unblock chat with payload:+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", payload);
       const res = await axiosApi.post(`/api/v1/block/`, payload);
 
       return res.data;
     },
     onSuccess: (data) => {
       const action = data.action || "Block/Unblock";
-      console.log('Chat action successful:', data);
       toast.success(`Chat ${action}ed successfully`);
       // Refresh the chat list
       queryClient.invalidateQueries({ queryKey: ['myRooms'] });
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     },
     onError: (error) => {
-      console.error('Error blocking/unblocking chat:', error);
       const msg = error?.response?.data?.error?.message || error?.message || 'Failed to update chat';
       toast.error(msg);
     },
@@ -107,7 +91,6 @@ const ActionsDropdown = ({ showActions, onEditDetails, onAddMember, onBlockMembe
       return res.data;
     },
     onSuccess: () => {
-      console.log('Chat deleted successfully');
       toast.success('Chat deleted successfully');
       // Refresh the chat list
       queryClient.invalidateQueries({ queryKey: ['myRooms'] });
@@ -115,7 +98,6 @@ const ActionsDropdown = ({ showActions, onEditDetails, onAddMember, onBlockMembe
       if (onDeleteChat) onDeleteChat();
     },
     onError: (error) => {
-      console.error('Error deleting chat:', error);
       const msg = error?.response?.data?.message || error?.message || 'Failed to delete chat';
       toast.error(msg);
     },

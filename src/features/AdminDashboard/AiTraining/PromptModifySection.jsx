@@ -31,9 +31,6 @@ const PromptModifySection = () => {
             setPromptValue("");
             setIsEditing(false);
         },
-        onError: (err) => {
-            console.error('[PromptModifySection] Failed to reset prompt:', err);
-        },
     });
 
     // =======================================Fetch global prompt==========================================\\
@@ -41,7 +38,6 @@ const PromptModifySection = () => {
         queryKey: ['globalPrompt'],
         queryFn: async () => {
             const response = await axiosApi.get('/api/v1/global-prompt/');
-            console.log('[PromptModifySection] Global Template Data:', response.data);
             return response.data;
         },
     });
@@ -50,20 +46,13 @@ const PromptModifySection = () => {
     const updatePromptMutation = useMutation({
         mutationFn: async (payload) => {
             const response = await axiosApi.put('/api/v1/global-prompt/', payload);
-            console.log('[PromptModifySection] Update Template Response:', response.data);
             return response.data;
         },
-        onSuccess: (data) => {
-            console.log('[PromptModifySection] Template updated successfully:', data);
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['globalPrompt'] });
             setIsEditing(false);
         },
-        onError: (err) => {
-            console.error('[PromptModifySection] Failed to update template:', err);
-        },
     });
-
-    console.log('[PromptModifySection] Template Data State:', promptData?.data);
 
     useEffect(() => {
         if (promptData?.data?.prompt && !isEditing) {

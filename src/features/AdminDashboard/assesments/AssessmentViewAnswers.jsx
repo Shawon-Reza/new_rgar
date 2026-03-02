@@ -7,25 +7,14 @@ export const AssessmentViewAnswers = () => {
     const { participantId, assessmentId } = useParams();
     const navigate = useNavigate();
 
-    console.log('AssessmentViewAnswers Params:', { participantId, assessmentId });
-
     // .........................................Fetch user answers........................................\\
     const { data: answersData, isLoading, error } = useQuery({
         queryKey: ['assessmentAnswers', assessmentId, participantId],
         queryFn: async () => {
             const res = await axiosApi.get(`/api/v1/assessments/${assessmentId}/users/${participantId}/`);
-            console.log("res", res);
             return res.data;
         },
-        onSuccess: (data) => {
-            console.log('[AssessmentViewAnswers] API data:', data);
-        },
-        onError: (err) => {
-            console.error('[AssessmentViewAnswers] Error fetching answers:', err);
-        },
     });
-    console.log("answersData", answersData?.data?.summary);
-    console.log("answersData", answersData?.data?.answers);
 
     const responseData = answersData?.data;
     const user = responseData?.user;

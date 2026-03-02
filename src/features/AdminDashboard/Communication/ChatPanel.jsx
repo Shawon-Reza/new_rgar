@@ -44,7 +44,6 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     enabled: !!chatRoom && roomType === "group",
     staleTime: 5 * 60 * 1000,
   });
-console.log("===============================:::::::::::",roomMembersData)
   // ======================================= Messages (HTTP with infinite scroll) =======================================\\
   const {
     data,
@@ -72,7 +71,6 @@ console.log("===============================:::::::::::",roomMembersData)
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
-  console.log("Messages (HTTP with infinite scroll) =======================================\\", data?.pages);
 
   // Flatten and reverse to show oldest -> newest
   const messages = useMemo(() => {
@@ -92,14 +90,12 @@ console.log("===============================:::::::::::",roomMembersData)
   useEffect(() => {
     if (mentionMessageId && !anchorMessageId) {
       shouldFetchMentionRef.current = true;
-      console.log('🔔 Mention detected, will auto-fetch:', mentionMessageId);
     }
   }, [mentionMessageId, anchorMessageId]);
 
   // When location.state changes (mention notification clicked while on same route)
   useEffect(() => {
     if (mentionMessageId && anchorMessageId !== mentionMessageId) {
-      console.log('📍 New mention state detected while on same route:', mentionMessageId);
       setAnchorMessageId(null); // Reset to trigger mention detection
     }
   }, [location.state?.messageId, mentionMessageId]);
@@ -117,11 +113,8 @@ console.log("===============================:::::::::::",roomMembersData)
     // Check if message exists in current loaded messages
     const messageExists = messages.some((m) => m.id === mentionMessageId);
 
-    console.log('🔍 Looking for message:', mentionMessageId, 'Found:', messageExists, 'Total messages:', messages.length);
-
     if (messageExists) {
       if (anchorMessageId !== mentionMessageId) {
-        console.log('✅ Message found, setting anchor:', mentionMessageId);
         setAnchorMessageId(mentionMessageId);
         shouldFetchMentionRef.current = false; // Stop fetching
         // Clear location state after message is anchored
@@ -132,10 +125,8 @@ console.log("===============================:::::::::::",roomMembersData)
 
     // If message not found and we have more pages, keep fetching
     if (hasNextPage && !isFetchingNextPage) {
-      console.log('📍 Mention message not found, loading older messages... (hasNextPage:', hasNextPage, ')');
       fetchNextPage();
     } else if (!hasNextPage) {
-      console.warn('⚠️ Message not found and no more pages to fetch');
       shouldFetchMentionRef.current = false; // Stop fetching
     }
   }, [chatRoom, mentionMessageId, messages.length, hasNextPage, isFetchingNextPage, data, anchorMessageId]);
@@ -238,15 +229,6 @@ console.log("===============================:::::::::::",roomMembersData)
     const mentionIds = extractMentionIdsFromMarkup(content);
     const contentPlain = toPlainText(content).trim();
 
-    // Debug: Log what we're about to send
-    try {
-      console.groupCollapsed("📨 Sending chat message payload");
-      console.log("room:", chatRoom);
-      console.log("content:", contentPlain);
-      console.log("mention_user_ids:==============================================================================", mentionIds);
-      console.groupEnd();
-    } catch { }
-
     // .................................................** Send Messages **.............................................. //
     try {
       const formData = new FormData();
@@ -264,30 +246,17 @@ console.log("===============================:::::::::::",roomMembersData)
         });
       }
 
-      // Debug: log formData entries
-      try {
-        for (const [k, v] of formData.entries()) {
-          if (v instanceof File) {
-            console.log("formData", k, { name: v.name, type: v.type, size: v.size });
-          } else {
-            console.log("formData", k, v);
-          }
-        }
-      } catch { }
-
       const resp = await axiosApi.post(`/api/v1/rooms/${chatRoom}/send/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("✅ Message sent:", resp?.status, resp?.data);
       setAttachments([]);
     } catch (err) {
       // Turn off typing indicator on error
       if (isAiRoom) {
         setIsAiTyping(false);
       }
-      console.error("❌ Send message failed:", err?.response?.status, err?.response?.data || err?.message);
     }
   };
 
@@ -340,10 +309,6 @@ console.log("===============================:::::::::::",roomMembersData)
       const isValidExtension = allowedExtensions.includes(fileExtension);
       const isValidSize = file.size <= maxSize;
 
-      if (!isValidExtension || !isValidSize) {
-        console.warn(`❌ File rejected: ${file.name} - Extension: ${isValidExtension ? 'valid' : 'invalid'}, Size: ${isValidSize ? 'valid' : 'too large'}`);
-      }
-
       return isValidExtension && isValidSize;
     });
 
@@ -371,24 +336,14 @@ console.log("===============================:::::::::::",roomMembersData)
 
     // Add test data if no members loaded
     if (data.length === 0) {
-      console.warn("⚠️ No members data, using test data");
       return [
         { id: '1', display: 'Rafit jr_staff' },
         { id: '2', display: 'Fugit magna' },
         { id: '3', display: 'Dolor Test' },
       ];
     }
-
-    console.log("📋 Mention Data Generated:", data);
-    console.log("📋 Total members:", members.length);
     return data;
   }, [members]);
-
-  useEffect(() => {
-    console.log("🔍 Room Type:", roomType);
-    console.log("🔍 Chat Room:", chatRoom);
-    console.log("🔍 Room Members Data:", roomMembersData);
-  }, [roomType, chatRoom, roomMembersData]);
 
   const isInputDisabled =
     data?.pages[0]?.room?.chat_blocked ||
@@ -413,9 +368,6 @@ console.log("===============================:::::::::::",roomMembersData)
       "https://api.dicebear.com/7.x/avataaars/svg?seed=Chat",
   };
   const headerAvatar = avatar ? `https://backend.getkyroai.com${avatar}` : safeUser.avatar;
-  console.log("pathaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", path)
-  // charting-ai
-  console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^::::::', headerAvatar)
 
   return (
     <div className={`flex flex-col h-full border border-gray-300 rounded-lg bg-white/50 overflow-hidden ${path == "charting-ai" ? "min-h-[calc(100vh-130px)] max-h-[calc(100vh-100px)]" : ""}`}>
@@ -467,10 +419,10 @@ console.log("===============================:::::::::::",roomMembersData)
 
               <ActionsDropdown
                 showActions={showActions}
-                onEditDetails={() => console.log("Edit Details")}
-                onAddMember={() => console.log("Add Member")}
-                onBlockMember={() => console.log("Block Member")}
-                onDeleteChat={() => console.log("Delete Chat")}
+                onEditDetails={() => { }}
+                onAddMember={() => { }}
+                onBlockMember={() => { }}
+                onDeleteChat={() => { }}
                 chatInfo={data?.pages[0]?.room}
               />
             </div>

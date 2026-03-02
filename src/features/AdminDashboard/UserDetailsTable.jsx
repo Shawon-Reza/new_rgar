@@ -13,8 +13,6 @@ export default function UserDetailsTable({ users = [], onEditUser, onChangePassw
   const queryClient = useQueryClient();
   const [statusUpdatingId, setStatusUpdatingId] = useState(null);
 
-  console.log("User:", users)
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -27,19 +25,16 @@ export default function UserDetailsTable({ users = [], onEditUser, onChangePassw
   }, []);
 
   const handleViewDetails = (userId) => {
-    console.log("[v0] View details clicked for user ID:", userId)
     navigate(`/admin/user-management/user/${userId}`);
   }
 
   const handleAction = (userId, action, e) => {
     e.stopPropagation();
-    console.log("[v0] Action menu clicked for user ID:", userId, "Action:", action)
     setOpenMenuId(openMenuId === userId ? null : userId);
   }
   //...............Handle Change Password..............\\
   const handleChangePassword = (userId, e) => {
     e.stopPropagation();
-    console.log("[v0] Change password for user ID:", userId);
     setOpenMenuId(null);
     const user = users.find(u => u.id === userId);
     const userName = user?.full_name || user?.email || '';
@@ -48,14 +43,12 @@ export default function UserDetailsTable({ users = [], onEditUser, onChangePassw
   //..............Handle Delete/Archive User..............\\
   const handleDeleteArchive = (userId, e) => {
     e.stopPropagation();
-    console.log("[v0] Delete/Archive user ID:", userId);
     setOpenMenuId(null);
     // Add your delete/archive logic here
   }
   //..............Handle Update User..............\\
   const handleUpdateUser = (userId, e) => {
     e.stopPropagation();
-    console.log("[v0] Update user ID:", userId);
     setOpenMenuId(null);
     onEditUser && onEditUser(userId);
   }
@@ -63,7 +56,6 @@ export default function UserDetailsTable({ users = [], onEditUser, onChangePassw
   const statusMutation = useMutation({
     mutationFn: async ({ userId, nextStatus }) => {
       const payload = { is_active: !!nextStatus };
-      console.log(payload)
       const response = await axiosApi.patch(`/api/v1/users/status/${userId}/`, payload);
       return response.data;
     },

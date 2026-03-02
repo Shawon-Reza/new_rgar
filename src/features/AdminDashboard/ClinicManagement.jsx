@@ -25,18 +25,18 @@ const ClinicManagement = () => {
         queryKey: ['clinics'],
         queryFn: async () => {
             const response = await axiosApi.get('/api/v1/clinics/')
-            console.log('[Clinics API Response]:', response.data)
+
             return Array.isArray(response.data) ? response.data : response.data?.results || response.data?.data || []
         },
     })
 
-    console.log(clinics)
+ 
 
     // ============ DELETE CLINIC MUTATION ============
     const deleteClinicMutation = useMutation({
         mutationFn: async (clinicId) => {
             const response = await axiosApi.delete(`/api/v1/clinics/${clinicId}/delete/`)
-            console.log('[Delete Clinic Response]:', response.data)
+
             return response.data
         },
         onSuccess: () => {
@@ -45,7 +45,7 @@ const ClinicManagement = () => {
         onError: (error) => {
             const message = error?.response?.data?.detail || error.message || "Failed to delete clinic"
             toast.error(message)
-            console.log(error)
+      
         },
     })
 
@@ -56,7 +56,7 @@ const ClinicManagement = () => {
                 `/api/v1/clinics/${clinicId}/active/`,
                 { is_deleted: !isCurrentlyDeleted }
             )
-            console.log('[Toggle Clinic Status Response]:', response.data)
+
             return response.data
         },
         onSuccess: (data, { clinicId, isCurrentlyDeleted }) => {
@@ -69,7 +69,6 @@ const ClinicManagement = () => {
         onError: (error) => {
             const message = error?.response?.data?.detail || error.message || "Failed to update clinic status"
             toast.error(message)
-            console.log(error)
         },
     })
 

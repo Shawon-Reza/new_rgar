@@ -17,7 +17,7 @@ const SubjectMatters = () => {
         queryKey: ['subjectMatters'],
         queryFn: async () => {
             const response = await axiosApi.get('/api/v1/subjects/')
-            console.log('[Subject Matters API Response]:', response.data)
+
             // Handle both array and object responses
             const dataArray = Array.isArray(response.data) ? response.data : response.data?.results || response.data?.data || []
             return dataArray
@@ -31,7 +31,7 @@ const SubjectMatters = () => {
                 title: matterData.title,
                 description: matterData.description,
             })
-            console.log('[Create Subject Matter Response]:', response.data)
+
             return response.data
         },
         onSuccess: () => {
@@ -42,7 +42,6 @@ const SubjectMatters = () => {
         onError: (error) => {
             const message = error?.response?.data?.detail || error.message || 'Failed to create subject matter'
             toast.error(message)
-            console.log(error)
         },
     })
 
@@ -53,7 +52,7 @@ const SubjectMatters = () => {
                 title: matterData.title,
                 description: matterData.description,
             })
-            console.log('[Update Subject Matter Response]:', response.data)
+
             return response.data
         },
         onSuccess: () => {
@@ -64,7 +63,6 @@ const SubjectMatters = () => {
         onError: (error) => {
             const message = error?.response?.data?.detail || error.message || 'Failed to update subject matter'
             toast.error(message)
-            console.log(error)
         },
     })
 
@@ -72,7 +70,7 @@ const SubjectMatters = () => {
     const deleteMatterMutation = useMutation({
         mutationFn: async (matterId) => {
             const response = await axiosApi.delete(`/api/v1/subjects/${matterId}/delete/`)
-            console.log('[Delete Subject Matter Response]:', response.data)
+
             return response.data
         },
         onSuccess: () => {
@@ -82,7 +80,6 @@ const SubjectMatters = () => {
         onError: (error) => {
             const message = error?.response?.data?.detail || error.message || 'Failed to delete subject matter'
             toast.error(message)
-            console.log(error)
         },
     })
 
@@ -98,14 +95,13 @@ const SubjectMatters = () => {
 
     // Handle add subject matter
     const handleAddSubjectMatter = () => {
-        console.log("[SubjectMatters] Add Subject Matter clicked")
+     
         setSelectedMatter(null)
         handleModalOpen()
     }
 
     // Handle edit subject matter
     const handleEditSubjectMatter = (id, title) => {
-        console.log("[SubjectMatters] Edit clicked for ID:", id, "Title:", title)
         const matter = subjectMatters.find((m) => m.id === id) || null
         setSelectedMatter(matter)
         handleModalOpen()

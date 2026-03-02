@@ -98,7 +98,6 @@ const AdminDashboard = () => {
     useEffect(() => {
         if (unreadCountData?.unread_counts?.total) {
             setNotificationCount(unreadCountData.unread_counts.total)
-            console.log('📊 Unread notifications count updated:', unreadCountData.unread_counts.total)
         }
     }, [unreadCountData])
 
@@ -110,30 +109,22 @@ const AdminDashboard = () => {
 
     //================================ Connect the WebSocket For Notifications ======================================\\
     useEffect(() => {
-        console.log('🔗 Attempting to connect WebSocket for Notifications...')
-
         const socketHandler = connectWebSocketForNotifications({
             onMessage: (data) => {
-                console.log('Message Recieve from Component============================##', data?.data?.total);
                 setNotificationCount(data?.data?.total)
 
             },
 
             onSeen: (messageIds, seenBy) => {
-                console.log('✅ Messages marked as seen:', messageIds, 'by', seenBy)
             }
         })
 
         if (socketHandler) {
-            console.log('✅ WebSocket handler created for Notifications')
             notificationSocketRef.current = socketHandler
-        } else {
-            console.error('❌ Failed to create WebSocket handler for Notifications')
         }
 
         return () => {
             if (notificationSocketRef.current?.close) {
-                console.log('🔌 Closing WebSocket connection for Notifications')
                 notificationSocketRef.current.close()
             }
         }
@@ -145,12 +136,6 @@ const AdminDashboard = () => {
             if (notificationSocketRef.current?.getReadyState) {
                 const readyState = notificationSocketRef.current.getReadyState()
                 const stateNames = { 0: 'CONNECTING', 1: 'OPEN', 2: 'CLOSING', 3: 'CLOSED' }
-                console.log(`🔍 WebSocket status check: ${stateNames[readyState]} (${readyState})`)
-
-                if (readyState === 3) {
-                    console.warn('⚠️ WebSocket is CLOSED - connection lost or server unavailable')
-                    console.warn('Make sure server at 10.10.13.2:8000 is running and accessible')
-                }
             }
         }, 30000) // Check every 30 seconds
 

@@ -1,13 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axiosApi from '../../../service/axiosInstance';
 import { base_URL } from '../../../config/Config';
 import { toast } from 'react-toastify';
 import { queryClient } from '../../../main';
 
 const AddMemberModal = ({ onClose, roomId, userList }) => {
-    console.log("Add Member Modal opened with Room ID:", roomId);
-
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -19,19 +17,12 @@ const AddMemberModal = ({ onClose, roomId, userList }) => {
 
     // Handle user selection
     const handleUserToggle = (userId) => {
-        console.log("User toggled:", userId);
         if (selectedUsers.includes(userId)) {
             setSelectedUsers(selectedUsers.filter(id => id !== userId));
         } else {
             setSelectedUsers([...selectedUsers, userId]);
         }
     };
-
-    // Log selected users and room ID
-    useEffect(() => {
-        console.log("Selected Users:", selectedUsers);
-        console.log("Room ID:", roomId);
-    }, [selectedUsers, roomId]);
 
     // Mutation for adding members to group
     const addMemberMutation = useMutation({
@@ -40,20 +31,16 @@ const AddMemberModal = ({ onClose, roomId, userList }) => {
                 user_ids: selectedUsers,
             };
 
-            console.log("Adding members with payload:", payload);
-
             const res = await axiosApi.post(`/api/v1/rooms/${roomId}/members/add/`, payload);
             return res.data;
         },
-        onSuccess: (data) => {
-            console.log('Members added successfully:', data);
+        onSuccess: () => {
             toast.success('Members added successfully');
             // Refresh the chat list
             queryClient.invalidateQueries({ queryKey: ['myRooms'] });
             onClose();
         },
         onError: (error) => {
-            console.error('Error adding members:', error);
             const msg = error?.response?.data?.message || error?.message || 'Failed to add members';
             toast.error(error?.response?.data?.error?.message || msg);
         },
@@ -64,8 +51,6 @@ const AddMemberModal = ({ onClose, roomId, userList }) => {
             toast.warning('Please select at least one user');
             return;
         }
-        console.log("Final Selected Users:", selectedUsers);
-        console.log("Final Room ID:", roomId);
         addMemberMutation.mutate();
     };
 

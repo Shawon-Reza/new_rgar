@@ -18,7 +18,6 @@ const ClinicSelector = ({ clinics, isLoading, onSelectClinic }) => {
         setSelectedClinic(clinic)
         setIsDropdownOpen(false)
         setSearchQuery("")
-        console.log("Selected Clinic:", clinic)
 
         // Call parent callback if provided
         if (onSelectClinic) {

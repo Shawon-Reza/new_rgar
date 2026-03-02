@@ -40,24 +40,20 @@ const CreateNewAssesment = () => {
         },
         enabled: Boolean(formData.clinic),
     })
-    console.log("Doctors Subroles:.........................###################################", subRolesData)
     // ..........................................Fetch subject matters from API............................................\\
     const { data: subjectMatters = [], isLoading: subjectMattersLoading, error: subjectMattersError, refetch: refetchSubjectMatters } = useQuery({
         queryKey: ['subjectMatters'],
         queryFn: async () => {
             const response = await axiosApi.get('/api/v1/subjects/')
-            console.log('[Subject Matters API Response]:', response.data)
             // Handle both array and object responses
             const dataArray = Array.isArray(response.data) ? response.data : response.data?.results || response.data?.data || []
             return dataArray
         },
     })
-    console.log("Subject matters:.........................###################################", subjectMatters)
 
     // .............................................Create assessment mutation.........................................\\
     const createAssessmentMutation = useMutation({
         mutationFn: async (data) => {
-            console.log("data:##############################################################", data)
             const response = await axiosApi.post('/api/v1/assesments/create/', {
                 title: data.title,
                 clinic: parseInt(data.clinic),
@@ -69,9 +65,8 @@ const CreateNewAssesment = () => {
             })
             return response.data
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             toast.success('Assessment created successfully!')
-            console.log('[CreateNewAssesment] Assessment created successfully:', data)
             queryClient.invalidateQueries(['assessments'])
             // Reset form
             setFormData({
@@ -89,8 +84,6 @@ const CreateNewAssesment = () => {
             // TODO: Navigate to assessment details or refresh list
         },
         onError: (error) => {
-            
-            console.log('[CreateNewAssesment] Error creating assessment:', error?.response?.data?.message)
             toast.error('[CreateNewAssesment] Error creating assessment ', error?.response?.data?.message )
             // TODO: Show error toast/notification
         }
@@ -124,7 +117,6 @@ const CreateNewAssesment = () => {
 
     const handleGenerate = (e) => {
         e.preventDefault()
-        console.log("Create assesment data:", formData)
         if (!formData.title || !formData.role || !formData.clinic) {
             toast.warn(' Please fill in all required fields')
             // TODO: Show validation error toast

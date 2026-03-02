@@ -21,22 +21,15 @@ const CreatedAssesmentDetails = () => {
     const [deadlineDate, setDeadlineDate] = useState('')
     const [selectedAnswers, setSelectedAnswers] = useState({})
 
-
-    console.log("ID from Assesment Destails", assessmentId)
-
     // .....................................Fetch assessment questions from API..........................................\\
     const { data: questionsData, isLoading: isLoadingQuestions, error: questionsError } = useQuery({
         queryKey: ['assessmentQuestions', assessmentId],
         queryFn: async () => {
             const response = await axiosApi.get(`/api/v1/assessments/${assessmentId}/questions`)
-            console.log("Call Api from Details...............................")
             return response.data
         },
         enabled: !!assessmentId
     })
-    console.log('[CreatedAssesmentDetails] API Response:', questionsData)
-    console.log('[CreatedAssesmentDetails] API Response For Question:', questionsData?.data?.questions)
-    console.log('[CreatedAssesmentDetails] API Response:', questionsData?.data?.assessment.status)
 
     // .......................................Update assessment status mutation.................................\\
     const updateStatusMutation = useMutation({
@@ -46,8 +39,7 @@ const CreatedAssesmentDetails = () => {
             })
             return response.data
         },
-        onSuccess: (data) => {
-            console.log('[CreatedAssesmentDetails] Status updated successfully:', data)
+        onSuccess: () => {
             setShowOngoingNotice(true)
             queryClient.invalidateQueries(['assessmentQuestions', assessmentId])
             toast.success('Assessment status updated to active!')
@@ -55,10 +47,6 @@ const CreatedAssesmentDetails = () => {
             // TODO: Navigate back or refresh data
             navigate(-1);
         },
-        onError: (error) => {
-            console.error('[CreatedAssesmentDetails] Error updating status:', error)
-            // TODO: Show error toast/notification
-        }
     })
 
     // ..........................................Delete question mutation.........................................\\
@@ -67,12 +55,10 @@ const CreatedAssesmentDetails = () => {
             const response = await axiosApi.delete(`/api/v1/assessments/questions-del/${questionId}/`)
             return response.data
         },
-        onSuccess: (data, questionId) => {
-            console.log('[CreatedAssesmentDetails] Question deleted successfully:', data)
+        onSuccess: (_, questionId) => {
             setQuestions(prev => prev.filter(q => q.id !== questionId))
         },
         onError: (error) => {
-            console.error('-------------------------- ', error?.response.data.message)
             toast.error(
                 error?.response?.data?.message ||
                 error?.message ||
@@ -90,9 +76,7 @@ const CreatedAssesmentDetails = () => {
             })
             return response.data
         },
-        onSuccess: (data) => {
-            console.log('[CreatedAssesmentDetails] Deadline set successfully:', data)
-            console.log('[CreatedAssesmentDetails] Deadline date:', deadlineDate)
+        onSuccess: () => {
 
             // Reset modal state
             setShowDeadlineModal(false)
@@ -101,7 +85,6 @@ const CreatedAssesmentDetails = () => {
             queryClient.invalidateQueries(['assessmentQuestions', assessmentId])
         },
         onError: (error) => {
-            console.error('[CreatedAssesmentDetails] Error setting deadline:', error?.response?.data?.message)
             toast.error(
                 error?.response?.data?.message ||
                 error?.message ||
@@ -121,7 +104,6 @@ const CreatedAssesmentDetails = () => {
             return response.data
         },
         onSuccess: (data) => {
-            console.log('[CreatedAssesmentDetails] Question added successfully:', data)
 
             // Add the new question to the list
             if (data?.data) {
@@ -148,7 +130,6 @@ const CreatedAssesmentDetails = () => {
             toast.success('Question added successfully!')
         },
         onError: (error) => {
-            console.error('[CreatedAssesmentDetails] Error adding question:', error?.response?.data?.message)
             toast.error(
                 error?.response?.data?.message ||
                 error?.message ||
@@ -186,7 +167,6 @@ const CreatedAssesmentDetails = () => {
     }, [questionsData, isLoadingQuestions])
 
     const handleBack = () => {
-        console.log('[CreatedAssesmentDetails] Back clicked')
         // TODO: Navigate back using router
         navigate(-1);
     }
@@ -198,7 +178,6 @@ const CreatedAssesmentDetails = () => {
             }
             return q
         }))
-        console.log('[CreatedAssesmentDetails] Question liked:', questionId)
     }
 
     const handleDislike = (questionId) => {
@@ -208,11 +187,9 @@ const CreatedAssesmentDetails = () => {
             }
             return q
         }))
-        console.log('[CreatedAssesmentDetails] Question disliked:', questionId)
     }
 
     const handleDeleteQuestion = (questionId) => {
-        console.log("Delete Question ID:", questionId)
         deleteQuestionMutation.mutate(questionId)
     }
 
@@ -223,7 +200,6 @@ const CreatedAssesmentDetails = () => {
     }
 
     const handleAddQuestion = () => {
-        console.log('[CreatedAssesmentDetails] Add Question clicked')
         setShowAddQuestionModal(true)
     }
 
@@ -242,7 +218,6 @@ const CreatedAssesmentDetails = () => {
             toast.error('Please select the correct answer')
             return
         }
-        console.log('[CreatedAssesmentDetails] Saving new question:', newQuestionText)
         addQuestionMutation.mutate({
             questionText: newQuestionText,
             options: newQuestionOptions,
@@ -258,7 +233,6 @@ const CreatedAssesmentDetails = () => {
     }
 
     const handleSetDeadline = () => {
-        console.log('[CreatedAssesmentDetails] Set Deadline clicked')
         setShowDeadlineModal(true)
     }
 
@@ -267,7 +241,6 @@ const CreatedAssesmentDetails = () => {
             toast.error('Please select a deadline date')
             return
         }
-        console.log('[CreatedAssesmentDetails] Saving deadline:', deadlineDate)
         setDeadlineMutation.mutate(deadlineDate)
     }
 
@@ -285,7 +258,6 @@ const CreatedAssesmentDetails = () => {
                 disliked: q.disliked
             }))
         }
-        console.log('[CreatedAssesmentDetails] essSave Assment:', payload)
         // Call the status update endpoint
         updateStatusMutation.mutate()
     }

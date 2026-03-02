@@ -16,15 +16,8 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
   const { mutate: markNotificationsAsRead } = useMutation({
     mutationFn: async () => {
       const response = await axiosApi.post('/api/v1/notifications/read/')
-      console.log('Mark as read response:', response.data)
       return response.data
     },
-    onSuccess: (data) => {
-      console.log('Notifications marked as read successfully:', data)
-    },
-    onError: (error) => {
-      console.error('Error marking notifications as read:', error)
-    }
   })
 
   // ====================================== Get Notifications List UI====================================== //
@@ -40,15 +33,10 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
   const { mutate: deleteNotification } = useMutation({
     mutationFn: async ({ source, id }) => {
       const response = await axiosApi.delete(`/api/v1/notifications/${source}/${id}/`)
-      console.log('Delete notification response:', response.data)
       return response.data
     },
-    onSuccess: (data) => {
-      console.log('Notification deleted successfully:', data)
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
-    },
-    onError: (error) => {
-      console.error('Error deleting notification:', error)
     }
   })
 
@@ -58,15 +46,10 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
       // Backend expects type: "notification" when source is "notification", otherwise "ai_ticket"
       const body = { type: source === 'notification' ? 'notification' : 'ai_ticket' }
       const response = await axiosApi.post(`/api/v1/notifications/web/${id}/seen/`, body)
-      console.log('Mark notification as seen response:', response.data)
       return response.data
     },
-    onSuccess: (data) => {
-      console.log('Notification marked as seen successfully:', data)
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
-    },
-    onError: (error) => {
-      console.error('Error marking notification as seen:', error)
     }
   })
 
@@ -74,11 +57,9 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
   const { mutate: deleteAllNotifications } = useMutation({
     mutationFn: async () => {
       const response = await axiosApi.delete('/api/v1/notifications/delete-all/')
-      console.log('Delete all notifications response:', response.data)
       return response.data
     },
-    onSuccess: (data) => {
-      console.log('All notifications deleted successfully:', data)
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
       Swal.fire({
         title: "Deleted!",
@@ -87,7 +68,6 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
       })
     },
     onError: (error) => {
-      console.error('Error deleting all notifications:', error)
       Swal.fire({
         title: "Error!",
         text: error?.response?.data?.message || "Failed to delete all notifications.",
@@ -104,14 +84,10 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
     }
   }, [isSuccess, notificationsData, markNotificationsAsRead])
 
-  console.log('Notifications Data:', notificationsData?.results)
-
   // ====================================== Navigate to specefic route on Click Notification ====================================== //
 
   const handleNotificationClick = (notification) => {
-    console.log("Specific Notification:==========", notification)
     const type = notification?.type
-    console.log("Specific Notification:==========", type)
 
     if (type === 'mention') {
       const roomId = notification?.payload?.room_id
@@ -129,7 +105,6 @@ const Notifications = ({ notifications = [], notificationCount = 0, onNotificati
 
   // ====================================== Clear All Notifications UI ====================================== //
   const handleClearAll = () => {
-    console.log("Clear All Notifications Clicked")
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",

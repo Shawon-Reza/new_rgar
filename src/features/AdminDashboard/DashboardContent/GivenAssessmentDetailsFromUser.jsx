@@ -7,7 +7,7 @@ import { FiArrowLeft, FiCheckCircle, FiBookOpen } from 'react-icons/fi'
 const GivenAssessmentDetailsFromUser = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    console.log(id)
+ 
 
     //=============================================== Fetch Assessment Review ================================================\\
     const { data: reviewData, isLoading: isLoadingReview, error: reviewError } = useQuery({
@@ -19,7 +19,6 @@ const GivenAssessmentDetailsFromUser = () => {
         enabled: !!id, // Only fetch when an assessment is selected
     })
 
-    console.log('[GivenAssessmentViewFromUsers] Review Data:)))))))))))))))))))))))))))))))))))))))))))))))))))))))', reviewData?.data)
 
     const responseData = reviewData?.data;
     const assessment = responseData?.assessment;

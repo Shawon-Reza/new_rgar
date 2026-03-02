@@ -14,9 +14,6 @@ import { toast } from "react-toastify";
 const AddClinicModal = ({ isOpen, onClose, data }) => {
     if (!isOpen) return null; // Don't render when closed
 
-
-    console.log("Clinic data :88888888888888888888888888888888888888::0", data)
-
     const [formData, setFormData] = useState({
         name: data?.name || "",
         address: data?.address || "",
@@ -65,7 +62,6 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
             const message = error?.response?.data?.message || error.message || "Failed to fetch clinic types";
         }
     });
-    console.log(clinicTypes)
 
 
     //============================================= Create clinic mutation =============================================//
@@ -96,7 +92,6 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
         onError: (error) => {
             const message = error?.response?.data?.message || error.message || "Failed to create clinic";
             toast.error(message);
-            console.log(error?.response?.data?.message || error.message);
         },
     });
 
@@ -111,7 +106,6 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
                 website: clinicData.website,
                 clinic_type: clinicData.clinic_type,
             });
-            console.log('[Update Clinic Response]:', response.data);
             return response.data;
         },
         onSuccess: () => {
@@ -121,7 +115,6 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
         onError: (error) => {
             const message = error?.response?.data?.message || error.message || "Failed to update clinic";
             toast.error(message);
-            console.log(error);
         },
     });
 

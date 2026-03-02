@@ -36,7 +36,6 @@ const MessageList = ({
     const isSelectingRef = useRef(false);
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    console.log("Path==========================================", path, roomType)
     const isChartingAI = roomType === "ai_charting";
     // Deduplicate messages by id to avoid duplicate keys
     const uniqueMessages = useMemo(() => {
@@ -143,7 +142,6 @@ const MessageList = ({
             // Scroll down by the height of newly added messages to stay in same visual position
             lastProgrammaticScrollRef.current = Date.now();
             container.scrollTop = heightDifference;
-            console.log("📍 Scroll position restored - added", heightDifference, "px");
 
             prevScrollHeightRef.current = 0;
             wasAtBottomBeforeFetchRef.current = false; // User scrolled to top for pagination, not at bottom
@@ -164,13 +162,10 @@ const MessageList = ({
             if (el) {
                 lastProgrammaticScrollRef.current = Date.now();
                 el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                console.log('📍 Scrolled to message:', anchorMessageId);
             } else {
                 attempts++;
                 if (attempts < maxAttempts) {
                     setTimeout(tryScroll, 100);
-                } else {
-                    console.warn('⚠️ Could not find message to scroll to:', anchorMessageId);
                 }
             }
         };
@@ -216,7 +211,6 @@ const MessageList = ({
         // When user scrolls to top - load older messages
         if (scrollTop === 0 && hasNextPage && !isFetchingNextPage && !isLoadingRef.current) {
             isLoadingRef.current = true;
-            console.log("📍 Top reached - loading older messages");
 
             // Store current scroll position before fetch
             prevScrollHeightRef.current = e.target.scrollHeight;
@@ -271,7 +265,6 @@ const MessageList = ({
         };
 
         const senderImageSrc = getSenderImageSrc();
-        console.log("=================================================== ", senderImageSrc)
 
         // Helper function to determine file type from URL
         const getFileType = (url) => {
@@ -307,12 +300,10 @@ const MessageList = ({
             mutationFn: (reaction) =>
                 axiosApi.post(`/api/v1/messages/${msg.id}/react/`, { reaction }),
             onSuccess: () => {
-                console.log("✅ Reaction sent successfully");
                 queryClient.invalidateQueries({ queryKey: ["messages"] });
                 queryClient.refetchQueries({ queryKey: ["messages"] });
             },
             onError: (err) => {
-                console.error("❌ Reaction failed:", err?.response?.data || err?.message);
                 setOptimisticReaction(msg?.my_reaction || null);
                 setOptimisticCounts({
                     like: msg?.reactions?.like?.count || 0,

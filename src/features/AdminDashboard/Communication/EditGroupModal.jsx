@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import { queryClient } from '../../../main';
 
 const EditGroupModal = ({ onClose, roomId }) => {
-    console.log("Edit Group Modal opened with Room ID:", roomId);
 
     const [groupName, setGroupName] = useState('');
     const [groupImage, setGroupImage] = useState(null);
@@ -44,7 +43,6 @@ const EditGroupModal = ({ onClose, roomId }) => {
             return res.data;
         },
         onSuccess: (data) => {
-            console.log('Group updated successfully:', data);
             toast.success('Group details updated successfully');
             // Refresh the chat list
             queryClient.invalidateQueries({ queryKey: ['myRooms'] });

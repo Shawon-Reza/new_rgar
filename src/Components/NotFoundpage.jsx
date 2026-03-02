@@ -6,8 +6,6 @@ import GlobalProvider, { GlobalContext } from '../contexts/GlobalProvider';
 const NotFoundpage = () => {
 
 const {dummyInfo} = useContext(GlobalContext);
-console.log(dummyInfo.name)
-
     return (
         <div className='h-screen flex items-center justify-center bg-[#68dee0] text-white w-full '>
 

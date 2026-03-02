@@ -68,11 +68,9 @@ export default function UserManagement() {
             const url = `/api/v1/users/?${params.toString()}`;
 
             const response = await axiosApi.get(url)
-            console.log(response.data)
             return response.data;
         },
     })
-    console.log("User list :", userList);
 
 
 
@@ -133,25 +131,21 @@ export default function UserManagement() {
             role: selectedRole === "All Roles" ? null : selectedRole,
             clinic: selectedClinicId || null,
         };
-        console.log("[UserManagement] Filters applied:", filterParams);
     }, [searchQuery, selectedRole, selectedClinicId]);
 
     const handleAddUser = () => {
-        console.log("[UserManagement] Add user clicked");
         setModalMode('create');
         setSelectedUserId(null);
         setIsAddUserOpen(true);
     };
 
     const handleEditUser = (userId) => {
-        console.log("[UserManagement] Edit user clicked for ID:", userId);
         setModalMode('edit');
         setSelectedUserId(userId);
         setIsAddUserOpen(true);
     };
 
     const handleChangePassword = (userId, userName) => {
-        console.log("[UserManagement] Change password clicked for ID:", userId);
         setChangePasswordUserId(userId);
         setChangePasswordUserName(userName);
         setIsChangePasswordOpen(true);
@@ -199,7 +193,6 @@ export default function UserManagement() {
     };
 
     const handleUserCreated = (created) => {
-        console.log("[UserManagement] User created:", created);
         setUsers((prev) => [...prev, mapUserToRow(created)]);
     };
 

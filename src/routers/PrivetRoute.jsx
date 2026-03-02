@@ -4,7 +4,8 @@ import useUserPermissionsForOwn from "../hooks/useUserPermissionsForOwn";
 
 
 const AccessGuard = ({ children, roles = [], permission }) => {
-  console.log(permission)
+
+  
   const location = useLocation();
   const { userProfileData, userProfileLoading, userProfileError, accessToken } = useGetUserProfile();
   const userRole = userProfileData?.role;
@@ -16,8 +17,6 @@ const AccessGuard = ({ children, roles = [], permission }) => {
   const userPermissions = permissionData?.enabledPermissions || [];
   const isCheckingPermissions = permission && (isLoadingPermission || !permissionData);
 
-  console.log("Permission:===========", permissionData?.enabledPermissions);
-  console.log("Permission:===========", userPermissions);
   // ......................................................\\
 
 

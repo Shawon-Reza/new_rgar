@@ -65,8 +65,7 @@ export default function Security() {
     onError: (error) => {
       const message = error?.response?.data?.message || error?.response?.data?.detail || 'Failed to change password. Please try again.'
       setErrors({ submit: message })
-      console.log(message)
-      console.log(error)
+
     }
   })
 
@@ -104,13 +103,6 @@ export default function Security() {
 
   /** Handle Save Changes */
   const handleSaveChanges = async () => {
-    // Log all input field data on Save Changes click
-    console.log('[Security] Save Changes clicked:', {
-      currentPassword: formData.currentPassword,
-      newPassword: formData.newPassword,
-      confirmPassword: formData.confirmPassword,
-    })
-
     if (!validateForm()) return;
 
     resetPasswordMutation.mutate({

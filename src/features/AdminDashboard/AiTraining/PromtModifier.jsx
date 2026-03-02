@@ -41,7 +41,7 @@ const PromtModifier = () => {
         },
     });
 
-    console.log("=================================:",modifierData)
+    
 
     const modifierList = Array.isArray(modifierData?.data) ? modifierData.data : [];
     const selectedModifier =
@@ -102,7 +102,6 @@ const PromtModifier = () => {
         },
         onError: (err) => {
             console.error("[PromtModifier] Failed to delete modifier:", err);
-            console.log(err?.response?.data?.message)
             toast.error(err?.response?.data?.message || "Failed to delete modifier");
         },
     });

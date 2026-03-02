@@ -37,7 +37,7 @@ const AddMatterModal = ({ isOpen, onClose, data = null, onSubmit, isLoading = fa
         };
 
         if (onSubmit) onSubmit(payload);
-        console.log("[AddMatterModal] Submitted:", payload);
+
         onClose();
     };
 

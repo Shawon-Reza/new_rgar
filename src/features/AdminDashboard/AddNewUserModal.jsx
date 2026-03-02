@@ -117,7 +117,6 @@ const AddNewUserModal = ({
     queryFn: async () => {
       const clinicIdsParam = form.clinicIds.join(',')
       const response = await axiosApi.get(`/api/v1/subroles/?clinic_ids=${clinicIdsParam}`)
-      console.log('SubRoles Response:', response.data)
       return response.data
     },
     enabled: form.clinicIds.length > 0,
@@ -139,7 +138,6 @@ const AddNewUserModal = ({
       axiosApi.get(`/api/v1/users/${userId}/`)
         .then((response) => {
           const userData = response.data
-          console.log("Fetched user data======================:", userData)
 
           // Normalize clinics to parallel name/id arrays for chips + selection
           // Handle both string arrays and object arrays
@@ -201,7 +199,6 @@ const AddNewUserModal = ({
           setLoadingUserData(false)
         })
         .catch((error) => {
-          console.error('[AddNewUserModal] Failed to fetch user data:', error)
           alert('Failed to load user data')
           setLoadingUserData(false)
           onClose()
@@ -221,8 +218,6 @@ const AddNewUserModal = ({
   const createUserMutation = useMutation({
     mutationFn: async (payload) => {
       if (mode === 'edit' && userId) {
-        console.log(userId)
-        console.log(payload)
         const response = await axiosApi.patch(`/api/v1/users/${userId}/update/`, payload)
         return response.data
       } else {
@@ -231,7 +226,6 @@ const AddNewUserModal = ({
       }
     },
     onSuccess: (data) => {
-      console.log(mode === 'edit' ? 'User updated successfully:' : 'User created successfully:', data)
       onCreated && onCreated(data)
       // onRefetch && onRefetch()
       onClose && onClose()
@@ -239,7 +233,6 @@ const AddNewUserModal = ({
       toast.success(`User ${mode === 'edit' ? 'updated' : 'created'} successfully!`)
     },
     onError: (error) => {
-      console.error(`[AddNewUserModal] ${mode === 'edit' ? 'PUT' : 'POST'} failed:`, error)
       alert(error?.response?.data?.message || `Failed to ${mode === 'edit' ? 'update' : 'create'} user.`);
     },
   })
@@ -355,8 +348,6 @@ const AddNewUserModal = ({
     if (form.password) {
       payload.password = form.password
     }
-
-    console.log('[AddNewUserModal] Submitting payload:', payload)
     createUserMutation.mutate(payload)
   }
 

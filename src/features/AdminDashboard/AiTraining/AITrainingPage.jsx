@@ -7,7 +7,6 @@ import PromtModifier from './PromtModifier';
 
 const AITrainingPage = () => {
     const { userProfileData } = useGetUserProfile();
-    console.log("0000000000000000000000000000000", userProfileData?.role);
     const permission = userProfileData?.role === "president"
     return (
         <div className='flex flex-col gap-15 '>

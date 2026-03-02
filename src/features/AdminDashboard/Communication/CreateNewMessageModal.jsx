@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState } from 'react';
 import axiosApi from '../../../service/axiosInstance';
 import { base_URL } from '../../../config/Config';
 import { queryClient } from '../../../main';
@@ -13,11 +13,6 @@ const CreateNewMessageModal = ({ onClose }) => {
     const [message, setMessage] = useState('');
     const [selectedUsers, setSelectedUsers] = useState([]);
 
-    // .................**Console Search and Role**.................. //
-    useEffect(() => {
-        console.log("User search : ", userSearch, " ", "role: ", selectedRole, " ", "selected users: ", selectedUsers, " message: ", message);
-    }, [userSearch, selectedRole, selectedUsers, message]);
-
 
     // .......................*Fetch Clinics & Users List*......................... //
     const { data: userList, isLoading: userListIsLoading, error: userListError } = useQuery({
@@ -28,26 +23,21 @@ const CreateNewMessageModal = ({ onClose }) => {
             return res.data;
         },
     });
-    console.log("=======================",userList)
 
     // ..............*Mutation query function for create Private Chat*.............. //
     // Fixed typo + better name
     const createPrivateChats = useMutation({
         mutationFn: async ({ payload }) => {
-            console.log("Creating private chat with payload:", payload);
-
             const res = await axiosApi.post('/api/v1/rooms/directmesseges/', payload);
             return res.data; // Always return data
         },
-        onSuccess: (data) => {
-            console.log("Private chat created successfully:", data);
+        onSuccess: () => {
 
             // Important: Refresh the chat list so the new room appears immediately
             queryClient.invalidateQueries({ queryKey: ['myRooms'] });
             // Optional: Show success toast
         },
         onError: (error) => {
-            console.error("Error creating private chat:", error);
             // Better toast message
             const msg = error?.response?.data?.message || error?.message || "Failed to start chat";
             toast.error(msg);
@@ -59,7 +49,6 @@ const CreateNewMessageModal = ({ onClose }) => {
     };
 
     const handleUserToggle = (userId) => {
-        console.log("just Select :", userId);
         // If clicking the already-selected user, allow deselect
         if (selectedUsers.includes(userId)) {
             setSelectedUsers(selectedUsers.filter(id => id !== userId));
@@ -83,13 +72,6 @@ const CreateNewMessageModal = ({ onClose }) => {
         };
         // ...................**Call Mutation Function**................... //
         createPrivateChats.mutate({ payload });
-
-        // For now, just log the data
-        console.log('Send Message:', {
-            selectedUsers,
-            selectedRole,
-            message,
-        });
         onClose();
     };
 

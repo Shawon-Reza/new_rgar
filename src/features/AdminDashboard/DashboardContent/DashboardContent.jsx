@@ -20,29 +20,18 @@ const DashboardContent = () => {
 
   const { userProfileData } = useGetUserProfile();
   const userRole = userProfileData?.role
-  console.log(userProfileData?.role);
   const notDisplayAssessmentSection = userProfileData?.role === "owner" || userProfileData?.role === "president";
-  console.log(notDisplayAssessmentSection)
 
   // ====================================================Fetch dislikes Notifications for president only=====================================================
   const { data: dislikesData, isLoading: dislikesLoading, error: dislikesError } = useQuery({
     queryKey: ['dislikes'],
     queryFn: async () => {
       const res = await axiosApi.get('/api/v1/dislike/')
-      console.log('[DashboardContent] /api/v1/dislike/ response:', res.data)
       return res.data
     },
     enabled: userProfileData?.role === "president",
-    onSuccess: (data) => {
-      console.log('[DashboardContent] Dislikes data loaded successfully:', data)
-    },
-    onError: (err) => {
-      console.error('[DashboardContent] Error fetching dislikes:', err)
-    },
     staleTime: 5 * 60 * 1000,
   })
-
-  console.log("Dislikes Data===================================================================================================:", dislikesData?.results)
 
 
   // ...................................Fetch my assessments (logs only, UI unchanged)...................................\\
@@ -52,15 +41,8 @@ const DashboardContent = () => {
       const res = await axiosApi.get('/api/v1/my-assessments/')
       return res.data
     },
-    onSuccess: (data) => {
-      console.log('[DashboardContent] /api/v1/my-assessments response:', data)
-    },
-    onError: (err) => {
-      console.error('[DashboardContent] Error fetching my assessments:', err)
-    },
     staleTime: 5 * 60 * 1000,
   })
-  console.log("Consol*********************:", myAssessments?.data)
 
 
   // ...............................................................................................\\
@@ -70,46 +52,29 @@ const DashboardContent = () => {
     queryKey: ['dashboard-content'],
     queryFn: async () => {
       const res = await axiosApi.get('/api/v1/dashboard/')
-      console.log('[DashboardContent] /api/v1/dashboard/ response:', res.data)
       return res.data
     },
-    onSuccess: (data) => {
-      console.log('[DashboardContent] Dashboard data loaded successfully:', data)
-    },
-    onError: (err) => {
-      console.error('[DashboardContent] Error fetching dashboard data:', err)
-    },
   })
-
-  console.log("Dashboard Data:", dashboardData?.data?.recent_activity)
 
 
   // ====================================================== LIFECYCLE HOOKS =======================================================
   useEffect(() => {
-    console.log("[v0] Initializing Dashboard Component")
-    console.log("[v0] Setting recent activity from API data...")
-
     if (dashboardData?.data?.recent_activity && Array.isArray(dashboardData.data.recent_activity)) {
       setRecentActivity(dashboardData.data.recent_activity)
       setActivityPage(0)
       setLoading(false)
-      console.log("[v0] Recent Activity Loaded:", dashboardData.data.recent_activity)
     } else {
       setLoading(false)
     }
   }, [dashboardData])
 
   // ====================================================== EVENT HANDLERS ======================================================
-  const handleQuickAction = (actionLabel) => {
-    console.log("[v0] Quick Action Triggered:", actionLabel)
-    console.log("[v0] Action Details:", { action: actionLabel, timestamp: new Date().toISOString() })
+  const handleQuickAction = () => {
     // Add your action logic here
     // navigate('/admin/users-management');
   }
 
   const handleScrollMore = () => {
-    console.log("[v0] Scroll More clicked - Loading more activities...")
-    console.log("[v0] Current activities count:", recentActivity?.length)
     const itemsPerPage = 4
     if (!recentActivity || recentActivity.length === 0) return
     const totalPages = Math.ceil(recentActivity.length / itemsPerPage)

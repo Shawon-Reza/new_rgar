@@ -19,7 +19,7 @@ const UploadedDocuments = () => {
     queryKey: ["aiTrainingDocs"],
     queryFn: async () => {
       const response = await axiosApi.get("/api/v1/mytrainingrooms/docs/")
-      console.log("[UploadedDocuments] API data:", response.data)
+
       return response.data
     },
   })
@@ -68,29 +68,28 @@ const UploadedDocuments = () => {
 
   // Handle role filter
   const handleRoleFilter = (role) => {
-    console.log("[v0] Filtering by role:", role)
+
     setSelectedRole(role)
     setShowRoleDropdown(false)
 
     if (role === "All Roles") {
       setFilteredDocuments(documents)
-      console.log("[UploadedDocuments] Showing all documents")
+
     } else {
       const filtered = documents.filter((doc) => doc.role === role)
       setFilteredDocuments(filtered)
-      console.log("[UploadedDocuments] Filtered documents:", filtered)
+
     }
   }
 
   // Handle view details
   const handleViewDetails = (document) => {
     const { role } = getAuthData()
-    console.log("[UploadedDocuments] User role:", role)
-    console.log("[UploadedDocuments] Viewing document details:", document)
+
 
     // Construct full file URL
     const fullFileUrl = `${base_URL}${document.fileUrl}`
-    console.log("[UploadedDocuments] Opening file URL:", fullFileUrl)
+
 
     // Open file in new tab
     window.open(fullFileUrl, "_blank")
@@ -98,15 +97,12 @@ const UploadedDocuments = () => {
 
   // Handle action menu
   const handleAction = (action, document) => {
-    console.log("[v0] Action triggered:", action, "for document:", document)
     // Add your logic here - could be edit, delete, download, etc.
   }
-
   // Handle delete document
   const handleDelete = async (document) => {
     const confirmed = window.confirm(`Are you sure you want to delete "${document.name}"?`)
     if (confirmed) {
-      console.log("[UploadedDocuments] Deleting document:", document)
       deleteMutation.mutate(document.id)
     }
   }

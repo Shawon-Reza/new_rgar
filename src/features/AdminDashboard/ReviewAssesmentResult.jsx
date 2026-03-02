@@ -8,7 +8,7 @@ import axiosApi from '../../service/axiosInstance'
 const ReviewAssesmentResult = () => {
     const navigate = useNavigate();
     const { assessmentId } = useParams();
-    // console.log(assessmentId)
+   
 
     // ....................................Fetch assessment Participants data via useQuery........................................\\
     const { data: fetchedAssessment, isLoading, error: assessmentError } = useQuery({
@@ -17,14 +17,12 @@ const ReviewAssesmentResult = () => {
             const res = await axiosApi.get(`/api/v1/assessments/${assessmentId}/`)
             return res.data
         },
-        onSuccess: (data) => {
-            console.log('[ReviewAssesmentResult] API data for /api/v1/assessments/2/:', data)
-        },
+      
         onError: (err) => {
             console.error('[ReviewAssesmentResult] Error fetching assessment 2:', err)
         },
     })
-    console.log('[ReviewAssesmentResult] Fetched Assessment Data:', fetchedAssessment?.data?.participants)
+
 
     // Map API data to component state
     const assessmentData = fetchedAssessment?.data?.assessment
@@ -52,17 +50,12 @@ const ReviewAssesmentResult = () => {
     }))
 
     const handleBack = () => {
-        console.log('[ReviewAssesmentResult] Back clicked')
-        // TODO: Navigate back using router
-        // e.g., navigate(-1) or navigate('/assessments')
         navigate(-1)
     }
 
     const handleViewAnswers = (participantId) => {
-        console.log('[ReviewAssesmentResult] View Answers for:', participantId)
         navigate(`view-answers/${participantId}`)
-        // TODO: Navigate to detailed answers page
-        // e.g., navigate(`/assessments/${assessment.id}/participant/${participantId}`)
+
     }
 
     if (isLoading) {

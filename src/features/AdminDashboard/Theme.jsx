@@ -48,14 +48,12 @@ const Theme = () => {
 
     const handleColorSelect = (color) => {
         setSelectedColor(color.hex)
-        console.log(`🎨 Selected Color: ${color.name} (${color.hex})`)
         window.location.reload();
     }
     //========================================== Handle custom color selection =======================================\\
     const handleCustomColorSelect = () => {
         const hexColor = customColor.hex
         setSelectedColor(hexColor)
-        console.log(`🎨 Selected Custom Color: ${hexColor}`)
         setShowColorPicker(false)
         window.location.reload()
     }

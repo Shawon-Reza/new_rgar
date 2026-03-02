@@ -30,10 +30,6 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
     const navigate = useNavigate();
     const isMobile = useIsBelowMd();
 
-    useEffect(() => {
-        console.log("Is below :)))))))))))))))))))))))))))))))000000000000000000000000000: ", isMobile)
-    }, [isMobile]);
-
     // =================================== Theme Color From Localstorage ==================================\\
     useEffect(() => {
         const savedColor = localStorage.getItem('themeColor')
@@ -46,14 +42,10 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
     //...................................Get User Profile Data...................................\\
 
     const { userProfileData } = useGetUserProfile();
-    console.log(userProfileData?.role);
-    // console.log("User Profile dataaaaaaaaa=====================================================", userProfileData)
 
 
     // .................................Fetch user permissions..................................\\
     const { data: permissionData, isLoading: isLoadingPermission, isError: isErrorPermission } = useUserPermissionsForOwn();
-    console.log("Permission:", permissionData?.enabledPermissions
-    );
 
     // ......................................................................\\
     // ...................Access Control Logic For Sidebar display/Hidden........................\\
@@ -94,8 +86,6 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
             userProfileData?.role === "owner"
         // || userProfileData?.role === "president"
     };
-
-    console.log(accessControl);
 
     // .......................................................................\\
     return (

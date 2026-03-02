@@ -18,12 +18,6 @@ const GiveAssessmentsAnsware = () => {
             const res = await axiosApi.get(`/api/v1/assessments/${assessmentId}/questions/candidate`);
             return res.data;
         },
-        onSuccess: (data) => {
-            console.log('[GiveAssessmentsAnsware] API Response:', data);
-        },
-        onError: (err) => {
-            console.error('[GiveAssessmentsAnsware] Error:', err);
-        },
         enabled: !!assessmentId,
     });
 
@@ -38,15 +32,13 @@ const GiveAssessmentsAnsware = () => {
             const res = await axiosApi.post(`/api/v1/assessments/${assessmentId}/submit/`, answersData);
             return res.data;
         },
-        onSuccess: (data) => {
-            console.log('[GiveAssessmentsAnsware] Submit Success:', data);
+        onSuccess: () => {
             toast.success('Assessment submitted successfully!');
             navigate('/admin/dashboard');
             queryClient.invalidateQueries(['assessment-questions', assessmentId]);
 
         },
-        onError: (err) => {
-            console.error('[GiveAssessmentsAnsware] Submit Error:', err);
+        onError: () => {
             toast.error('Failed to submit assessment. Please try again.');
         },
     });
@@ -85,8 +77,6 @@ const GiveAssessmentsAnsware = () => {
                 option_id: option_id // Send selected option ID
             }))
         };
-
-        console.log('[GiveAssessmentsAnsware] Submitting Answers:', formattedAnswers);
         submitAssessmentMutation.mutate(formattedAnswers);
     };
 
@@ -121,7 +111,6 @@ const GiveAssessmentsAnsware = () => {
     }
 
     const { assessment, questions } = data.data;
-    console.log('[GiveAssessmentsAnsware] assessment:#########################################', questions);
 
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">

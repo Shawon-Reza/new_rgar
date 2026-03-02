@@ -73,32 +73,25 @@ const UserProfileFromAdmin = () => {
         queryKey: ['user-profile-admin', userId],
         queryFn: async () => {
             const res = await axiosApi.get(`/api/v1/users/${userId}/`);
-            console.log('[UserProfileFromAdmin] Fetched user data:', res.data);
             return res.data;
         },
         enabled: !!userId,
     });
-
-    console.log("   User Data:=====================================================================", user)
 
     // ............................Fetch user permission data from API...................................\\
     // const { data: userPermission, isLoading: loadingPermission, error: errorPermission } = useQuery({
     //     queryKey: ['user-Permissions', userId],
     //     queryFn: async () => {
     //         const res = await axiosApi.get(`/api/v1/permissions/users/${userId}/`);
-    //         console.log('[UserProfileFromAdmin] Fetched user data:', res.data);
     //         return res.data;
     //     },
     //     enabled: !!userId,
     // });
-    // console.log("   User Permission:", userPermission)
     const {
         data: permissionData,
         isLoading: permissionLoading,
         error: permissionError
     } = useUserPermissions(userId);
-
-    console.log("User Permissions:", permissionData?.groupPerms);
 
 
 
@@ -109,7 +102,6 @@ const UserProfileFromAdmin = () => {
     const statusMutation = useMutation({
         mutationFn: async ({ userId, nextStatus }) => {
             const payload = { is_active: !!nextStatus };
-            console.log('[UserProfileFromAdmin] Toggle status payload:', payload);
             const response = await axiosApi.patch(`/api/v1/users/status/${userId}/`, payload);
             return response.data;
         },
@@ -129,7 +121,6 @@ const UserProfileFromAdmin = () => {
     }
 
     const handleToggleChat = () => {
-        console.log('[UserProfileFromAdmin] Chat toggle clicked - implement API call');
         // TODO: Implement API call to toggle chat status
     }
 
@@ -147,7 +138,6 @@ const UserProfileFromAdmin = () => {
 
     const handleSavePermissions = (userId, permissions) => {
         setUserPermissions(permissions)
-        console.log('[UserProfileFromAdmin] Permissions saved for user:', userId, permissions)
         // TODO: Call API to save permissions
         // Example: PUT /api/users/${userId}/permissions with body: permissions
     }

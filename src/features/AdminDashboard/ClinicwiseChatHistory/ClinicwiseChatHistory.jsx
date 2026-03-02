@@ -33,12 +33,9 @@ const ClinicwiseChatHistory = () => {
         queryKey: ['clinicChat'],
         queryFn: async () => {
             const response = await axiosApi.get('/api/v1/clinicChat/')
-            console.log('[Clinic Chat API Response]:', response.data)
             return response.data
         },
     })
-
-    console.log('Clinic Chat Data:', clinicChatData?.clinics)
 
     // ============ FETCH ROOM LIST ============
     const { data: roomsData, isLoading: roomsLoading, error: roomsError } = useQuery({
@@ -52,24 +49,18 @@ const ClinicwiseChatHistory = () => {
                     member_role: selectedRole === 'all' ? '' : selectedRole
                 }
             })
-            console.log('[Rooms API Response]:', response.data)
-            console.log('[Filtered Rooms]:', response.data?.rooms)
             return response.data
         },
     })
 
-    console.log('Room Lists:====================================================================================', roomsData?.results)
-
     // ============ HANDLE CLINIC SELECTION ============
     const handleSelectClinic = (clinic) => {
-        console.log("Clinic selected in parent:", clinic)
         setSelectedClinic(clinic)
         setSelectedRoom(null) // Reset selected room when clinic changes
     }
 
     // ============ HANDLE ROOM SELECTION ============
     const handleSelectRoom = (room) => {
-        console.log("Room selected:", room)
         setSelectedRoom(room)
     }
 

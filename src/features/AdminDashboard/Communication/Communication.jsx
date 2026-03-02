@@ -36,9 +36,6 @@ const Communication = () => {
     const { userId } = useParams();
     const path = location.pathname.split('/')[2];
 
-    // console.log("Im From Communication. My Location :---------", location.pathname)
-    console.log("Im From Communication. My Location :---------==============================", location)
-
     // Debounced search handler - prevents input from losing focus
     const handleSearchInput = useDebouncedCallback((value) => {
         setSearchQuery(value);
@@ -46,12 +43,9 @@ const Communication = () => {
 
     //...................................Get User Profile Data.....................................\\
     const { userProfileData } = useGetUserProfile();
-    console.log(userProfileData?.role);
 
     // .....................................Fetch user permissions..................................\\
     const { data: permissionData, isLoading: isLoadingPermission, isError: isErrorPermission } = useUserPermissionsForOwn();
-    console.log("Permission:********************************************", permissionData?.enabledPermissions
-    );
     // ......................................................................\\
     // ...................Access Control Logic For Sidebar display/Hidden........................\\
     const accessControl = {
@@ -94,9 +88,6 @@ const Communication = () => {
             userProfileData?.role === "president"
     };
 
-    console.log(accessControl);
-
-
     // ...................Fetch user's chat rooms list with filters.......................\\
     const { data: rooms = { read_only: false, ai_rooms: [], results: [] }, isLoading } = useQuery({
         queryKey: ["myRooms", searchQuery, selectedRole, path, userId],
@@ -112,13 +103,11 @@ const Communication = () => {
             }
 
             const response = await axiosApi.get(url);
-            console.log("%%%%%%%%%%%%%%1", response.data)
             return response.data;
         },
         keepPreviousData: true, // Smooth UX while loading new results
         staleTime: 1000 * 30, // Optional: reduce refetch frequency
     });
-    console.log("-----------------=============================================---", rooms)
 
 
     // WebSocket for real-time room updates
@@ -126,8 +115,6 @@ const Communication = () => {
         socketRef.current = connectWebSocketForChatList({
             onMessage: (message) => {
                 if (message.type !== "room_update") return;
-
-                console.log("Room update received:", message);
 
                 // Invalidate all myRooms queries (including filtered ones)
                 // This triggers a refetch with current searchQuery & selectedRole
@@ -149,14 +136,9 @@ const Communication = () => {
             const res = await axiosApi.post('/api/v1/rooms/ai/me/');
             return res.data;
         },
-        onSuccess: (data) => {
-            console.log("AI chat room created successfully:", data);
+        onSuccess: () => {
             // Critical: Refresh the room list so the new AI room appears instantly
             queryClient.invalidateQueries({ queryKey: ["myRooms"] });
-        },
-        onError: (error) => {
-            console.error("Failed to create AI chat room:", error);
-            // Optional: toast.error("Could not load AI Assistant");
         },
     });
 
@@ -165,18 +147,13 @@ const Communication = () => {
         const roomIdFromNotification = location.state?.roomId;
         const messageIdFromNotification = location.state?.messageId;
 
-        console.log("🔔 Notification state detected:", { roomIdFromNotification, messageIdFromNotification });
-
         if (roomIdFromNotification && rooms?.results && rooms.results.length > 0) {
             const matchingChat = rooms.results.find(
                 (chat) => chat.room_id === roomIdFromNotification
             );
             if (matchingChat) {
-                console.log("✅ Auto-selecting chat from notification:", matchingChat);
                 handleChatSelect(matchingChat);
                 setActiveTab("allChat");
-            } else {
-                console.warn("⚠️ Matching chat not found for roomId:", roomIdFromNotification);
             }
         }
     }, [location, rooms?.results]);
@@ -211,16 +188,24 @@ const Communication = () => {
             rooms.ai_rooms.length === 0 &&
             !createAiRoom.isPending // Prevent duplicate calls
         ) {
-            console.log("No AI room found → creating one automatically...");
             createAiRoom.mutate();
         }
     }, [activeTab, rooms?.ai_rooms, createAiRoom.isPending]);
+    // ============================== Automatically select the AI room when switch All chat to Ai Assistance ============================\\
+    useEffect(() => {
+        if (activeTab !== "aiAssistant") return;
+        if (!Array.isArray(rooms?.ai_rooms) || rooms.ai_rooms.length === 0) return;
+
+        const firstAiRoom = rooms.ai_rooms[0];
+        if (selectedChat?.room_id !== firstAiRoom.room_id) {
+            setSelectedChat(firstAiRoom);
+        }
+    }, [activeTab, rooms?.ai_rooms, selectedChat?.room_id]);
 
 
 
     const handleChatSelect = (chat) => {
         setSelectedChat(chat ?? null);
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", chat)
     };
 
     const handleRoleFilterChange = (role) => {
@@ -320,7 +305,12 @@ const Communication = () => {
                             All Chat
                         </button>
                         <button
-                            onClick={() => setActiveTab("aiAssistant")}
+                            onClick={() => {
+                                setActiveTab("aiAssistant");
+                                if (Array.isArray(rooms?.ai_rooms) && rooms.ai_rooms.length > 0) {
+                                    setSelectedChat(rooms.ai_rooms[0]);
+                                }
+                            }}
                             className={`pb-1 font-medium ${activeTab === "aiAssistant"
                                 ? "text-primary border-b-2 border-primary"
                                 : "text-gray-600 hover:text-primary"

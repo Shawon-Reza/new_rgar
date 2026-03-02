@@ -24,9 +24,6 @@ const GeneratedAssesmentsAndHistories = () => {
             return response.data
         }
     })
-    console.log('[GeneratedAssesmentsAndHistories] whole response:', assessmentsData);
-    console.log('[GeneratedAssesmentsAndHistories] API Response:', assessmentsData?.data.completed?.results);
-    console.log('[GeneratedAssesmentsAndHistories] API Ongoing:', assessmentsData?.data.ongoing?.results);
 
 
     useEffect(() => {
@@ -52,10 +49,7 @@ const GeneratedAssesmentsAndHistories = () => {
             })
             return response.data
         },
-        onSuccess: (data, variables) => {
-            console.log('[GeneratedAssesmentsAndHistories] Status updated successfully:', data)
-            console.log('[GeneratedAssesmentsAndHistories] Assessment ID:', variables.assessmentId)
-            console.log('[GeneratedAssesmentsAndHistories] New Status:', variables.status)
+        onSuccess: (_, variables) => {
 
             // Update the assessment in the list
             setOngoingAssessments(prev => prev.map(assessment =>
@@ -69,7 +63,6 @@ const GeneratedAssesmentsAndHistories = () => {
             queryClient.invalidateQueries(['assessments'])
         },
         onError: (error) => {
-            console.error('[GeneratedAssesmentsAndHistories] Error updating status:', error?.response?.data?.message)
             toast.error(
                 error?.response?.data?.message ||
                 error?.message ||
@@ -79,24 +72,20 @@ const GeneratedAssesmentsAndHistories = () => {
     })
 
     const handleViewDetails = (assessmentId) => {
-        console.log('[GeneratedAssesmentsAndHistories] View Details:', assessmentId)
         // TODO: Navigate to details page or open modal
         navigate(`created/${assessmentId}`)
 
     }
 
     const handlePauseAssessment = (assessmentId) => {
-        console.log('[GeneratedAssesmentsAndHistories] Pause Assessment:', assessmentId)
         updateStatusMutation.mutate({ assessmentId, status: 'paused' })
     }
 
     const handleStartAssessment = (assessmentId) => {
-        console.log('[GeneratedAssesmentsAndHistories] Start Assessment:', assessmentId)
         updateStatusMutation.mutate({ assessmentId, status: 'active' })
     }
 
     const handleAssesmentClick = (assessmentId) => {
-        console.log('[GeneratedAssesmentsAndHistories] Assessment clicked:', assessmentId)
         navigate(`/admin/assessments/history/${assessmentId}`);
     }
 
@@ -104,11 +93,9 @@ const GeneratedAssesmentsAndHistories = () => {
     const deleteAssessmentMutation = useMutation({
         mutationFn: async (assessmentId) => {
             const response = await axiosApi.delete(`/api/v1/assessments/${assessmentId}/delete/`)
-            console.log('[GeneratedAssesmentsAndHistories] Delete response:', response.data)
             return response.data
         },
-        onSuccess: (data) => {
-            console.log('[GeneratedAssesmentsAndHistories] Assessment deleted successfully:', data)
+        onSuccess: () => {
             toast.success('Assessment deleted successfully!')
             queryClient.invalidateQueries({ queryKey: ['assessments'] })
             Swal.fire({
@@ -118,7 +105,6 @@ const GeneratedAssesmentsAndHistories = () => {
             })
         },
         onError: (error) => {
-            console.error('[GeneratedAssesmentsAndHistories] Error deleting assessment:', error)
             toast.error(
                 error?.response?.data?.message ||
                 error?.message ||
@@ -133,7 +119,6 @@ const GeneratedAssesmentsAndHistories = () => {
     })
 
     const handleDeleteAssessment = (assessmentId) => {
-        console.log('Delete assessment:', assessmentId)
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",

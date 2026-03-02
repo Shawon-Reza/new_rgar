@@ -19,12 +19,6 @@ export default function AITrainingCenter() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Console logging for component initialization
-    useEffect(() => {
-        console.log("[AITrainingCenter] Component Initialized")
-        console.log("[AITrainingCenter] Initial Upload Queue:", uploadQueue)
-    }, [])
-
     // If navigated from a dislike notification, call the dislike endpoint once
     useEffect(() => {
         const fromId = location?.state?.fromDislikeId
@@ -42,12 +36,9 @@ export default function AITrainingCenter() {
         (async () => {
             try {
                 sessionStorage.setItem(storageKey, 'pending')
-                console.log('[AITrainingCenter] Calling dislike endpoint for id:', fromId)
                 const res = await axiosApi.post(`/api/v1/dislike/${fromId}/`)
-                console.log('[AITrainingCenter] Dislike POST response:', res?.status, res?.data)
                 sessionStorage.setItem(storageKey, 'done')
             } catch (err) {
-                console.error('[AITrainingCenter] Dislike POST failed:', err?.response?.status, err?.response?.data || err?.message)
                 sessionStorage.removeItem(storageKey)
             } finally {
                 // Clear the location state without triggering a React navigation
@@ -62,20 +53,14 @@ export default function AITrainingCenter() {
         queryKey: ['aiTrainingRoom'],
         queryFn: async () => {
             const response = await axiosApi.post('/api/v1/mytrainingrooms/')
-            console.log('[AiTrainingChat] Room data:', response.data)
             return response.data
-        },
-        onError: (err) => {
-            console.error('[AiTrainingChat] Error fetching room:', err)
         },
     })
 
     const chatRoom = roomData?.data?.room_id
-    console.log(chatRoom)
 
     const uploadTrainingMutation = useMutation({
         mutationFn: async (formData) => {
-            console.log("[AITrainingCenter] Uploading to:", `/api/v1/mytrainingrooms/${chatRoom}/upload/`)
             const response = await axiosApi.post(`/api/v1/mytrainingrooms/${chatRoom}/upload/`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -83,16 +68,14 @@ export default function AITrainingCenter() {
             })
             return response.data
         },
-        onSuccess: (data) => {
-            console.log("[AITrainingCenter] Upload success:", data)
+        onSuccess: () => {
             toast.success("Files uploaded successfully!")
             setUploadQueue([])
             setTitle("")
             setProvidedTopics("")
             queryClient.invalidateQueries({ queryKey: ['aiTrainingDocs'] })
         },
-        onError: (error) => {
-            console.error("[AITrainingCenter] Upload failed:", error)
+        onError: () => {
             toast.error("Upload failed. Please try again.")
         },
     })
@@ -115,14 +98,12 @@ export default function AITrainingCenter() {
         setDragActive(false)
 
         const files = e.dataTransfer.files
-        console.log("[v0] Files dropped:", files)
         handleFiles(files)
     }
 
     // Handle file selection
     const handleFileChange = (e) => {
         const files = e.target.files
-        console.log("[v0] Files selected:", files)
         handleFiles(files)
     }
 
@@ -136,26 +117,21 @@ export default function AITrainingCenter() {
                 progress: Math.floor(Math.random() * 100),
                 file,
             }
-            console.log("[AITrainingCenter] File added to queue:", fileObj)
             return fileObj
         })
 
         setUploadQueue([...uploadQueue, ...newFiles])
-        console.log("[AITrainingCenter] Updated upload queue:", [...uploadQueue, ...newFiles])
     }
 
     // Remove file from queue
     const removeFile = (id) => {
-        console.log("[AITrainingCenter] Removing file with id:", id)
         const updatedQueue = uploadQueue.filter((file) => file.id !== id)
         setUploadQueue(updatedQueue)
-        console.log("[AITrainingCenter] Updated upload queue after removal:", updatedQueue)
     }
 
     // Handle update AI model
     const handleUpdateAIModel = () => {
         if (!chatRoom) {
-            console.error("[AITrainingCenter] No chat room available for upload")
             return
         }
 

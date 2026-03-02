@@ -14,24 +14,24 @@ const NotificationsToggle = () => {
 
     // Fetch notifications data
     useEffect(() => {
-        console.log("[v0] Notifications component mounted")
+
         fetchNotifications()
     }, [])
 
     const fetchNotifications = async () => {
         try {
-            console.log("[v0] Fetching notifications data...")
+
             setLoading(true)
 
             const response = await axiosApi.get('/api/v1/users/notifications/')
             const data = response.data
-            console.log("[v0] Notifications API response:", data)
+
             
             setNotifications({
                 notify_assessments: data.notify_assessments ?? false,
                 notify_tagged_messages: data.notify_tagged_messages ?? false
             })
-            console.log("[v0] Notifications data loaded:", data)
+
             setLoading(false)
         } catch (error) {
             console.error("[v0] Error fetching notifications:", error)
@@ -42,7 +42,7 @@ const NotificationsToggle = () => {
 
     const handleToggle = async (key) => {
         const currentState = notifications[key]
-        console.log(`[v0] Toggling notification: ${key}, Current state: ${currentState}`)
+  
 
         // Optimistically update UI
         const updatedNotifications = {
@@ -54,7 +54,7 @@ const NotificationsToggle = () => {
         // Call backend API to save the change
         try {
             const response = await axiosApi.patch('/api/v1/users/notifications/', updatedNotifications)
-            console.log('[v0] Notification preference updated successfully:', response.data)
+
             toast.success('Notification preference updated')
         } catch (error) {
             console.error('[v0] Error updating notification preference:', error)

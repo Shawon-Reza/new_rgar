@@ -2,8 +2,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 import axiosApi from '../../../service/axiosInstance';
 import { base_URL } from '../../../config/Config';
-import toast from 'daisyui/components/toast';
+
 import { queryClient } from '../../../main';
+import { toast } from 'react-toastify';
 
 const roles = ['doctor', 'manager', 'staff', 'jr_staff', 'president'];
 
@@ -28,27 +29,22 @@ const CreateNewGroupModal = ({ onClose }) => {
         },
         keepPreviousData: true,
     });
-    console.log("User list data:", userList)
 
 
-    
+
+
     // ........................**Post Request For Create Group**.................. //
     const createGroupByClinic = useMutation({
         mutationFn: async ({ payload }) => {
-            console.log("Creating group with payload:", payload);
             const res = await axiosApi.post('/api/v1/rooms/group/create/', payload);
-            console.log("Creating group with payload:**********************");
-
             return res.data; // Always return data
         },
         onSuccess: (data) => {
-            console.log("Group created successfully:", data);
-            // Important: Refresh the chat list so the new group appears immediately
-            // Assuming 'myRooms' is the query key for chat rooms
             queryClient.invalidateQueries({ queryKey: ['myRooms'] });
         },
         onError: (error) => {
             console.error("Error creating group:", error);
+            toast.error(error?.response?.data?.error?.group_kind?.message || error?.response?.data?.message || error.message || "Failed to create group");
         },
     });
 
