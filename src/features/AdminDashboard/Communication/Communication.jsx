@@ -212,6 +212,23 @@ const Communication = () => {
         setSelectedRole(role);
     };
 
+    const handleDirectRoomCreated = (roomId) => {
+        if (!roomId) return;
+
+        setActiveTab("allChat");
+
+        const existingRoom = Array.isArray(rooms?.results)
+            ? rooms.results.find((chat) => chat.room_id === roomId)
+            : null;
+
+        if (existingRoom) {
+            setSelectedChat(existingRoom);
+            return;
+        }
+
+        setSelectedChat({ room_id: roomId, type: "private" });
+    };
+
     // Format last message time
     const formatChatTime = (isoString) => {
         if (!isoString) return "";
@@ -527,7 +544,10 @@ const Communication = () => {
                 {showCreateMessageModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
                         <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl lg:max-w-3xl xl:max-w-5xl relative mx-5 sm:mx-10">
-                            <CreateNewMessageModal onClose={() => setShowCreateMessageModal(false)} />
+                            <CreateNewMessageModal
+                                onClose={() => setShowCreateMessageModal(false)}
+                                onChatCreated={handleDirectRoomCreated}
+                            />
                         </div>
                     </div>
                 )}

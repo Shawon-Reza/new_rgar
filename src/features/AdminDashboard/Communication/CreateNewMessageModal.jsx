@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 const fakeRoles = ['doctor', 'manager', 'staff', 'jr_staff'];
 
-const CreateNewMessageModal = ({ onClose }) => {
+const CreateNewMessageModal = ({ onClose, onChatCreated }) => {
     const [userSearch, setUserSearch] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
     const [message, setMessage] = useState('');
@@ -31,11 +31,17 @@ const CreateNewMessageModal = ({ onClose }) => {
             const res = await axiosApi.post('/api/v1/rooms/directmesseges/', payload);
             return res.data; // Always return data
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
 
             // Important: Refresh the chat list so the new room appears immediately
             queryClient.invalidateQueries({ queryKey: ['myRooms'] });
-            // Optional: Show success toast
+
+            const roomId = data?.data?.results?.[0]?.room_id;
+            if (roomId && typeof onChatCreated === 'function') {
+                onChatCreated(roomId, data);
+            }
+
+            onClose?.();
         },
         onError: (error) => {
             // Better toast message
@@ -72,7 +78,6 @@ const CreateNewMessageModal = ({ onClose }) => {
         };
         // ...................**Call Mutation Function**................... //
         createPrivateChats.mutate({ payload });
-        onClose();
     };
 
 

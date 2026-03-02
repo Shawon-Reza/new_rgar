@@ -516,19 +516,25 @@ const MessageList = ({
             )}
 
             {/* Loop through grouped messages and render them */}
-            {groupedMessages.map((item, index) => {
-                if (item.type === 'date') {
-                    return (
-                        <div key={`date-${index}`} className="flex items-center justify-center my-4">
-                            <div className="bg-gray-200 text-gray-600 text-xs font-semibold px-3 py-1 rounded-full">
-                                {formatDateLabel(item.dateObj)}
+            {groupedMessages.length === 0 ? (
+                <div className="h-full min-h-[220px] flex items-center justify-center text-center text-gray-500">
+                    <p>Start messaging to begin the conversation.</p>
+                </div>
+            ) : (
+                groupedMessages.map((item, index) => {
+                    if (item.type === 'date') {
+                        return (
+                            <div key={`date-${index}`} className="flex items-center justify-center my-4">
+                                <div className="bg-gray-200 text-gray-600 text-xs font-semibold px-3 py-1 rounded-full">
+                                    {formatDateLabel(item.dateObj)}
+                                </div>
                             </div>
-                        </div>
-                    );
-                } else {
-                    return <MessageBubble key={item.data.id} msg={item.data} />;
-                }
-            })}
+                        );
+                    } else {
+                        return <MessageBubble key={item.data.id} msg={item.data} />;
+                    }
+                })
+            )}
 
             {/* AI Typing Indicator */}
             {isAiTyping && (roomType === "ai" || path === "charting-ai") && (
