@@ -11,7 +11,6 @@ const CreateNewMessageModal = ({ onClose, onChatCreated }) => {
     const [userSearch, setUserSearch] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
     const [message, setMessage] = useState('');
-    const [selectedUsers, setSelectedUsers] = useState([]);
 
 
     // .......................*Fetch Clinics & Users List*......................... //
@@ -40,7 +39,6 @@ const CreateNewMessageModal = ({ onClose, onChatCreated }) => {
             if (roomId && typeof onChatCreated === 'function') {
                 onChatCreated(roomId, data);
             }
-
             onClose?.();
         },
         onError: (error) => {
@@ -54,26 +52,9 @@ const CreateNewMessageModal = ({ onClose, onChatCreated }) => {
         setSelectedRole(e.target.value);
     };
 
-    const handleUserToggle = (userId) => {
-        // If clicking the already-selected user, allow deselect
-        if (selectedUsers.includes(userId)) {
-            setSelectedUsers(selectedUsers.filter(id => id !== userId));
-            return;
-        }
-
-        // Prevent selecting more than one user
-        if (selectedUsers.length >= 1) {
-            toast.error("You already selected a user for chat");
-            return;
-        }
-
-        // Select this user as the sole selection
-        setSelectedUsers([userId]);
-    };
-
-    const handleSendMessage = () => {
+    const handleUserClick = (userId) => {
         const payload = {
-            user_ids: selectedUsers,
+            user_ids: [userId],
             content: message,
         };
         // ...................**Call Mutation Function**................... //
@@ -151,8 +132,12 @@ const CreateNewMessageModal = ({ onClose, onChatCreated }) => {
                                     userList?.results.map(user => (
                                         <div
                                             key={user.id}
-                                            className="flex items-center justify-between gap-3 py-2 hover:bg-gray-50 rounded-lg px-2 cursor-pointer"
-                                            onClick={() => handleUserToggle(user.id)}
+                                            className={`flex items-center justify-between gap-3 py-2 hover:bg-gray-50 rounded-lg px-2 ${createPrivateChats.isPending ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+                                            onClick={() => {
+                                                if (!createPrivateChats.isPending) {
+                                                    handleUserClick(user.id);
+                                                }
+                                            }}
                                         >
                                             <div className="flex items-center gap-2">
                                                 <img src={`${base_URL}${user.image}`} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
@@ -164,14 +149,6 @@ const CreateNewMessageModal = ({ onClose, onChatCreated }) => {
                                                 <div className='flex justify-center items-center gap-2 '>
                                                     <span className="bg-pink-100 text-pink-600 rounded-full px-3 py-1 text-xs font-semibold  ">{user.role}</span>
                                                 </div>
-
-                                                <input
-                                                    type="checkbox"
-                                                    className="w-5 h-5 rounded border-2 border-teal-500 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer"
-                                                    checked={selectedUsers.includes(user.id)}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    onChange={() => handleUserToggle(user.id)}
-                                                />
                                             </div>
                                         </div>
                                     ))
@@ -185,9 +162,6 @@ const CreateNewMessageModal = ({ onClose, onChatCreated }) => {
                 <div className="flex justify-end gap-4 mt-8">
                     <button type="button" className="border border-red-400 text-red-500 px-6 py-2 rounded-lg font-semibold bg-white hover:bg-red-50" onClick={onClose}>
                         Cancel
-                    </button>
-                    <button type="button" className="bg-teal-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-teal-700" onClick={handleSendMessage}>
-                        Send Message
                     </button>
                 </div>
             </form>
