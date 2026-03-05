@@ -131,6 +131,15 @@ const AddNewUserModal = ({
     setSearchSubrole('')
   }, [form.clinicIds])
 
+  React.useEffect(() => {
+    if (mode !== 'edit') return
+    if (subroleRoles.includes(form.role)) return
+    if (!form.subroleId) return
+
+    setForm((prev) => ({ ...prev, subroleId: null }))
+    setSearchSubrole('')
+  }, [form.role, form.subroleId, mode])
+
   // ========================================Fetch user data when in edit mode======================================\\
   React.useEffect(() => {
     if (mode === 'edit' && userId && isOpen) {

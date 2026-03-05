@@ -19,28 +19,30 @@ const DashboardContent = () => {
   const navigate = useNavigate();
 
   const { userProfileData } = useGetUserProfile();
+  const userId = userProfileData?.id;
   const userRole = userProfileData?.role
   const notDisplayAssessmentSection = userProfileData?.role === "owner" || userProfileData?.role === "president";
 
   // ====================================================Fetch dislikes Notifications for president only=====================================================
   const { data: dislikesData, isLoading: dislikesLoading, error: dislikesError } = useQuery({
-    queryKey: ['dislikes'],
+    queryKey: ['dislikes', userId],
     queryFn: async () => {
       const res = await axiosApi.get('/api/v1/dislike/')
       return res.data
     },
-    enabled: userProfileData?.role === "president",
+    enabled: !!userId && userProfileData?.role === "president",
     staleTime: 5 * 60 * 1000,
   })
 
 
-  // ...................................Fetch my assessments (logs only, UI unchanged)...................................\\
+  // ................................... Fetch my assessments (logs only, UI unchanged) ...................................\\
   const { data: myAssessments, isLoading: myAssessmentsLoading, error: myAssessmentsError } = useQuery({
-    queryKey: ['my-assessments'],
+    queryKey: ['my-assessments', userId],
     queryFn: async () => {
       const res = await axiosApi.get('/api/v1/my-assessments/')
       return res.data
     },
+    enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   })
 
@@ -49,12 +51,19 @@ const DashboardContent = () => {
 
   // =========================================== Fetch Dashboard Contents  ======================================================
   const { data: dashboardData, isLoading: dashboardLoading, error: dashboardError } = useQuery({
-    queryKey: ['dashboard-content'],
+    queryKey: ['dashboard-content', userId],
     queryFn: async () => {
       const res = await axiosApi.get('/api/v1/dashboard/')
       return res.data
     },
+    enabled: !!userId,
   })
+
+  useEffect(() => {
+    setRecentActivity(null)
+    setActivityPage(0)
+    setLoading(true)
+  }, [userId])
 
 
   // ====================================================== LIFECYCLE HOOKS =======================================================

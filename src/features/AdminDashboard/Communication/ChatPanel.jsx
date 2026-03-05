@@ -24,6 +24,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   const [forwardedDraft, setForwardedDraft] = useState("");
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
+  const actionsDropdownRef = useRef(null);
   const shouldFetchMentionRef = useRef(false);
   const lastForwardedRef = useRef(null);
 
@@ -188,6 +189,20 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
 
     return () => socket.close();
   }, [chatRoom, queryClient]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!showActions) return;
+      if (actionsDropdownRef.current && !actionsDropdownRef.current.contains(event.target)) {
+        setShowActions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showActions]);
 
   const sendMessage = async ({ content, files = [] }) => {
     if (!content.trim() && files.length === 0) return;
@@ -404,13 +419,13 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
               }
 
               {/* Button at the end */}
-              
 
-              
+
+
             </div>
 
 
-            <div className={`relative ${data?.pages[0]?.room?.type === "ai" ? "hidden" : ""} `}>
+            <div ref={actionsDropdownRef} className={`relative ${data?.pages[0]?.room?.type === "ai" ? "hidden" : ""} `}>
               <FiInfo
                 size={20}
                 className={`cursor-pointer ${path === "user-management" || path === "charting-ai" || path === "clinicwise-chat-history" ? "hidden" : ""}`}
@@ -422,7 +437,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
                 onEditDetails={() => { }}
                 onAddMember={() => { }}
                 onBlockMember={() => { }}
-                onDeleteChat={() => { }}
+                onDeleteChat={() => setShowActions(false)}
                 chatInfo={data?.pages[0]?.room}
               />
             </div>

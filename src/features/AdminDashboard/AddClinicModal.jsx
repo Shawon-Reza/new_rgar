@@ -14,6 +14,14 @@ import { toast } from "react-toastify";
 const AddClinicModal = ({ isOpen, onClose, data }) => {
     if (!isOpen) return null; // Don't render when closed
 
+    const FIELD_LIMITS = {
+        name: 100,
+        address: 250,
+        phone: 20,
+        fax: 20,
+        website: 200,
+    };
+
     const [formData, setFormData] = useState({
         name: data?.name || "",
         address: data?.address || "",
@@ -121,12 +129,19 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
     // Handle field changes
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const limit = FIELD_LIMITS[name];
+        const nextValue = typeof limit === "number" ? value.slice(0, limit) : value;
+        setFormData((prev) => ({ ...prev, [name]: nextValue }));
     };
 
     // Handle form submit
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!isEditMode && !formData.clinic_type) {
+            toast.error("Please select a clinic type before creating a clinic");
+            return;
+        }
+
         if (isEditMode) {
             updateClinicMutation.mutate(formData);
         } else {
@@ -168,6 +183,8 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
 
                                 value={formData.name}
                                 onChange={handleChange}
+                                maxLength={FIELD_LIMITS.name}
+                                required
                                 placeholder="Enter clinic name"
                                 className="w-full outline-none text-gray-700"
                             />
@@ -187,8 +204,10 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
                                     name="address"
                                     value={formData.address}
                                     onChange={handleChange}
+                                    maxLength={FIELD_LIMITS.address}
                                     placeholder="Enter clinic address"
                                     className="w-full outline-none text-gray-700"
+                                    required
                                 />
                             </div>
                         </div>
@@ -200,12 +219,15 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
                             <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
                                 <FiPhone className="text-gray-400 w-4 h-4" />
                                 <input
-                                    type="text"
+                                    type="tel"
+                                    inputMode="numeric"
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleChange}
+                                    maxLength={FIELD_LIMITS.phone}
                                     placeholder="Enter phone number"
                                     className="w-full outline-none text-gray-700"
+                                    required
                                 />
                             </div>
                         </div>
@@ -220,12 +242,14 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
                             <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
                                 <FiPhone className="text-gray-400 w-4 h-4" />
                                 <input
-                                    type="text"
+                                    type="tel"
                                     name="fax"
                                     value={formData.fax}
                                     onChange={handleChange}
+                                    maxLength={FIELD_LIMITS.fax}
                                     placeholder="Enter fax number"
                                     className="w-full outline-none text-gray-700"
+                                    required
                                 />
                             </div>
                         </div>
@@ -241,8 +265,10 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
                                     name="website"
                                     value={formData.website}
                                     onChange={handleChange}
+                                    maxLength={FIELD_LIMITS.website}
                                     placeholder="Enter website link"
                                     className="w-full outline-none text-gray-700"
+                                    required
                                 />
                             </div>
                         </div>
@@ -260,6 +286,8 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
                                     type="text"
                                     placeholder="Search clinic types..."
                                     value={searchClinicType}
+                                    maxLength={60}
+                                    
                                     onChange={(e) => setSearchClinicType(e.target.value)}
                                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                 />
@@ -344,7 +372,7 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
                         <button
                             type="submit"
                             className="px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition disabled:opacity-60"
-                            disabled={isLoading}
+                            disabled={isLoading || (!isEditMode && !formData.clinic_type)}
                         >
                             {isLoading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Clinic" : "Add Clinic")}
                         </button>

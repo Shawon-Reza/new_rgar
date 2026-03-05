@@ -46,6 +46,7 @@ const EditGroupModal = ({ onClose, roomId }) => {
             toast.success('Group details updated successfully');
             // Refresh the chat list
             queryClient.invalidateQueries({ queryKey: ['myRooms'] });
+            queryClient.invalidateQueries({ queryKey: ['messages'] });
             onClose();
         },
         onError: (error) => {

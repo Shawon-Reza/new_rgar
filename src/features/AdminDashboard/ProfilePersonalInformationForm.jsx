@@ -88,9 +88,19 @@ const ProfilePersonalInformationForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
+    let nextValue = value
+
+    if (name === 'phoneNumber') {
+      nextValue = value.replace(/[^\d+\-() ]/g, '').slice(0, 20)
+    }
+
+    if (name === 'firstName' || name === 'lastName') {
+      nextValue = value.slice(0, 20)
+    }
+
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: nextValue,
     })
   }
 
@@ -133,7 +143,7 @@ const ProfilePersonalInformationForm = () => {
       payload.append("picture", formData.avatarFile)
     }
 
-   
+
 
     try {
       setIsLoading(true)
@@ -239,6 +249,7 @@ const ProfilePersonalInformationForm = () => {
                 <input
                   type="text"
                   name="firstName"
+                  maxLength={20}
                   value={formData.firstName}
                   onChange={handleInputChange}
                   placeholder="Enter first name"
@@ -256,6 +267,7 @@ const ProfilePersonalInformationForm = () => {
                 <input
                   type="text"
                   name="lastName"
+                  maxLength={20}
                   value={formData.lastName}
                   onChange={handleInputChange}
                   placeholder="Enter last name"
@@ -273,6 +285,7 @@ const ProfilePersonalInformationForm = () => {
                 <input
                   type="email"
                   name="email"
+                  maxLength={40}
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Enter email address"
@@ -290,6 +303,7 @@ const ProfilePersonalInformationForm = () => {
                 </label>
                 <input
                   type="tel"
+                  inputMode="numeric"
                   name="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleInputChange}
