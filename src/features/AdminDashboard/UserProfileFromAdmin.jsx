@@ -67,6 +67,8 @@ const UserProfileFromAdmin = () => {
     const { userId } = useParams();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const userInfo = useGetUserProfile();
+    console.log(userInfo?.userProfileData?.role);
 
     // ............................Fetch user data from API...................................\\
     const { data: user, isLoading: loading, error } = useQuery({
@@ -240,22 +242,27 @@ const UserProfileFromAdmin = () => {
                 permissionError={permissionError}
             />
 
-            {/* Chat History Section */}
-            <div className="mt-8">
-                <h2 className="text-xl font-semibold text-[#2F2F2F] mb-3">Viewing Chat History</h2>
-                {/* ............................User Chat History ........................ */}
-                <Communication />
+            {/* Chat History Section only visible to admin*/}
+            {
+                userInfo?.userProfileData?.role === 'owner' && (
+                    <div className="mt-8">
+                        <h2 className="text-xl font-semibold text-[#2F2F2F] mb-3">Viewing Chat History</h2>
+                        {/* ............................User Chat History ........................ */}
+                        <Communication />
 
 
 
 
-                {/* Placeholder for future chat list */}
-                {/* <div className="rounded-xl border border-dashed border-gray-300 p-6 text-gray-500">
+                        {/* Placeholder for future chat list */}
+                        {/* <div className="rounded-xl border border-dashed border-gray-300 p-6 text-gray-500">
                     Chat history will appear here. Integrate your messages API and render the conversation list.
 
                     
                 </div> */}
-            </div>
+                    </div>
+                )
+            }
+
         </div>
     )
 }

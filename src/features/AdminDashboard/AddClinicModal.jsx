@@ -15,8 +15,8 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
     if (!isOpen) return null; // Don't render when closed
 
     const FIELD_LIMITS = {
-        name: 100,
-        address: 250,
+        name: 30,
+        address: 50,
         phone: 20,
         fax: 20,
         website: 200,
@@ -180,6 +180,7 @@ const AddClinicModal = ({ isOpen, onClose, data }) => {
                             <input
                                 type="text"
                                 name="name"
+
 
                                 value={formData.name}
                                 onChange={handleChange}
