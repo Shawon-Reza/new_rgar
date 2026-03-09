@@ -113,7 +113,8 @@ const UserProfileFromAdmin = () => {
         },
         onError: (error) => {
             const message = error?.response?.data?.message || "Failed to update status";
-            toast.error(message);
+            toast.error(error?.response?.data?.detail || message);
+           
         }
     });
 

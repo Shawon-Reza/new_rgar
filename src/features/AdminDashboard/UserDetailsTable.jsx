@@ -65,7 +65,8 @@ export default function UserDetailsTable({ users = [], onEditUser, onChangePassw
     },
     onError: (error) => {
       const message = error?.response?.data?.message || "Failed to update status";
-      toast.error(message);
+      toast.error(error?.response?.data?.detail || message);
+      console.log(error)
     },
     onSettled: () => {
       setStatusUpdatingId(null);
