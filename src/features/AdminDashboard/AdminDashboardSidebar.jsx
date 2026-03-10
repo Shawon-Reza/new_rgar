@@ -148,7 +148,7 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
                 </NavLink>
                 {/* //====================================== Chartly AI For Doctor ======================================\\ */}
                 {
-                    userProfileData?.role === "doctor" &&
+                    (userProfileData?.role === "doctor" || userProfileData?.role === "president") &&
                     <NavLink
                         to="/admin/charting-ai"
                         onClick={onClick}

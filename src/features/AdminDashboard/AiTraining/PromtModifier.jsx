@@ -229,6 +229,7 @@ const PromtModifier = () => {
                 createModifierMutation.mutate({
                     name: modifierName.trim(),
                     modifier: modifierValue.trim(),
+                    is_active: true,
                 });
                 return;
             }
@@ -266,6 +267,21 @@ const PromtModifier = () => {
         if (result.isConfirmed) {
             deleteModifierMutation.mutate(selectedModifier.id);
         }
+    };
+
+    const handleSetActiveModifier = async () => {
+        if (isCreatingNew || !selectedModifier?.id || selectedModifier?.is_active) {
+            return;
+        }
+
+        updateModifierMutation.mutate({
+            id: selectedModifier.id,
+            payload: {
+                name: modifierName.trim() || selectedModifier?.name || "",
+                modifier: modifierValue.trim() || selectedModifier?.modifier || "",
+                is_active: true,
+            },
+        });
     };
 
     return (
@@ -322,18 +338,6 @@ const PromtModifier = () => {
                     disabled={!isEditing}
                 />
 
-                {!isCreatingNew && (
-                    <label className="inline-flex items-center gap-2 text-xs text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={isActive}
-                            onChange={(e) => setIsActive(e.target.checked)}
-                            disabled={!isEditing}
-                        />
-                        Active modifier
-                    </label>
-                )}
-
                 <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>Last updated by: {isCreatingNew ? "N/A" : selectedModifier?.updated_by || "N/A"}</span>
                     <span>
@@ -353,11 +357,24 @@ const PromtModifier = () => {
                     </button>
                     <button
                         type="button"
-                        onClick={handleSave}
+                        onClick={isCreatingNew || isEditing ? handleSave : handleSetActiveModifier}
                         className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#5E5B4E] transition disabled:opacity-50"
-                        disabled={!isEditing || updateModifierMutation.isPending || createModifierMutation.isPending || deleteModifierMutation.isPending}
+                        disabled={
+                            updateModifierMutation.isPending ||
+                            createModifierMutation.isPending ||
+                            deleteModifierMutation.isPending ||
+                            (!isCreatingNew && !isEditing && selectedModifier?.is_active)
+                        }
                     >
-                        {updateModifierMutation.isPending || createModifierMutation.isPending ? "Saving..." : "Save"}
+                        {updateModifierMutation.isPending || createModifierMutation.isPending
+                            ? "Saving..."
+                            : isCreatingNew
+                                ? "Save & Active"
+                                : isEditing
+                                    ? "Update"
+                                    : selectedModifier?.is_active
+                                        ? "Active Modifier"
+                                        : "Active modifier"}
                     </button>
                 </div>
                 {!isCreatingNew && (

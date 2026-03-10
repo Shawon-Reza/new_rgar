@@ -55,7 +55,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     isFetchingNextPage,
     isFetchingPreviousPage,
   } = useInfiniteQuery({
-    queryKey: ["messages", chatRoom],
+    queryKey: ["messages", userId, chatRoom],
     enabled: !!chatRoom,
     queryFn: async ({ pageParam = null }) => {
       const res = await axiosApi.get(
@@ -164,7 +164,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
           setIsAiTyping(false);
         }
 
-        queryClient.setQueryData(["messages", chatRoom], (old) => {
+        queryClient.setQueryData(["messages", userId, chatRoom], (old) => {
           if (!old) return old;
 
           const exists = old.pages.some((p) =>
@@ -188,7 +188,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     });
 
     return () => socket.close();
-  }, [chatRoom, queryClient]);
+  }, [chatRoom, queryClient, userId, isAiRoom]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -206,6 +206,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
 
   const sendMessage = async ({ content, files = [] }) => {
     if (!content.trim() && files.length === 0) return;
+    if (isAiRoom && isAiTyping) return;
 
     const optimisticMsg = {
       id: `temp-${Date.now()}`,
@@ -232,8 +233,8 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
         // match[2] is the id per our markup
         ids.push(match[2]);
       }
-      // ensure uniqueness
-      return Array.from(new Set(ids));
+      // Ensure uniqueness and keep only numeric user IDs for backend mention_user_ids.
+      return Array.from(new Set(ids)).filter((id) => /^\d+$/.test(String(id)));
     };
 
     // Helper: convert markup to plain text, e.g. @[John Doe](2) => @John Doe
@@ -277,6 +278,8 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
 
   // ============================================Send message with optimistic update=====================================\\
   const handleSendMessage = async () => {
+    if (isAiRoom && isAiTyping) return;
+
     const trimmedInput = inputMessage.trim();
     if (forwardedDraft && trimmedInput) {
       const combined = `**Forwarded message:** \n> ${forwardedDraft.replace(/\n/g, "\n> ")}\n\n---\n\n**Added Query:** \n>${trimmedInput}`;
@@ -350,30 +353,39 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     }));
 
     // Add test data if no members loaded
+    let mentionList = data;
+
     if (data.length === 0) {
-      return [
+      mentionList = [
         { id: '1', display: 'Rafit jr_staff' },
         { id: '2', display: 'Fugit magna' },
         { id: '3', display: 'Dolor Test' },
       ];
     }
-    return data;
+    // ========================================== Ensure AI mention is always present for AI rooms ========================================= \\
+    const hasAiMention = mentionList.some(
+      (item) => String(item.display).trim().toLowerCase() === 'ai'
+    );
+
+    // Keep AI mention always as the final option in the suggestions list.
+    if (!hasAiMention) {
+      mentionList = [...mentionList, { id: 'ai_assistant', display: 'AI' }];
+    }
+
+    return mentionList;
   }, [members]);
 
   const isInputDisabled =
     data?.pages[0]?.room?.chat_blocked ||
     path === "user-management" ||
-    data?.pages[0]?.room?.can_send === false ||
-    (isAiRoom && isAiTyping);
+    data?.pages[0]?.room?.can_send === false;
 
   const inputPlaceholder =
     data?.pages[0]?.room?.chat_blocked
       ? 'Chat is blocked. You are not allowed to send messages until unblocked.'
       : data?.pages[0]?.room?.can_send === false
         ? 'User is currently inactive. Cannot send messages.'
-        : isAiRoom && isAiTyping
-          ? 'Please wait, AI is responding...'
-          : 'Type your message...';
+        : 'Type your message...';
   // ...........................**Chat info**........................... //
   // data?.pages[0].chatInfo)
   const safeUser = {
@@ -499,7 +511,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
                 ))}
               </div>
             )}
-            <div className="flex items-end gap-2 sm:gap-3 w-full min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3 w-full min-w-0">
 
               {/* ===================================== File upload button for group and private ================================== */}
               {(roomType === "group" || roomType === "private" || roomType === "ai") && (
@@ -582,9 +594,9 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
               )}
               <button
                 onClick={handleSendMessage}
-                disabled={(!inputMessage.trim() && attachments.length === 0) || isInputDisabled}
+                disabled={(!inputMessage.trim() && attachments.length === 0) || isInputDisabled || (isAiRoom && isAiTyping)}
                 className="disabled:opacity-50 cursor-pointer shrink-0"
-                title="Send Messages"
+                title={isAiRoom && isAiTyping ? 'Please wait, AI is responding...' : 'Send Messages'}
               >
                 <FiSend size={24} />
               </button>

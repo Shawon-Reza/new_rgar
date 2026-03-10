@@ -52,15 +52,23 @@ const LoginPage = () => {
     return (
         <div className='min-h-screen md:flex bg-secondary'>
             {/* Left Section - Login Form */}
-            <section className='relative w-full h-screen md:w-1/2 flex items-center justify-center  p-8'>
-                <div>
-                    <div className='text-center mb-8'>
+            <section className='w-full min-h-screen md:w-1/2 flex flex-col p-5 md:p-8 overflow-y-auto'>
+                <div className='w-full max-w-[220px] md:max-w-[260px] self-start flex items-center primarycolor bg-primary px-3 md:px-4 py-2 rounded-lg shadow-sm overflow-hidden'>
+                    <img src={icon} alt="Kyro AI"
+                        className='h-7 md:h-9 w-full object-contain'
+                    />
+                    {/* <p className='text-3xl font-bold'>AI.Desk</p> */}
+                </div>
+
+                <div className='flex-1 flex items-center justify-center py-8 md:py-10'>
+                    <div className='w-full max-w-xl'>
+                        <div className='text-center mb-8'>
                         <h1 className='text-4xl font-bold primarycolor mb-2 text-primary'>
                             Log in to your account
                         </h1>
                     </div>
 
-                    <div className='w-full max-w-xl bg-white p-4 px-6 md:px-12 py-8 rounded-xl shadow-lg z-10'>
+                    <div className='w-full bg-white p-4 px-6 md:px-12 py-8 rounded-xl shadow-lg z-10'>
 
 
                         <form onSubmit={handleSubmit} className='space-y-6'>
@@ -138,12 +146,6 @@ const LoginPage = () => {
                         </p>
                     </div>
                 </div>
-                {/* Absolute title display */}
-                <div className='absolute top-8 left-7 flex items-center primarycolor bg-primary px-4 py-2 rounded-lg shadow-sm'>
-                    <img src={icon} alt="Kyro AI"
-                        className='h-8 md:h-10 w-auto max-w-[520px] object-contain'
-                    />
-                    {/* <p className='text-3xl font-bold'>AI.Desk</p> */}
                 </div>
 
             </section>

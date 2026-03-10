@@ -66,8 +66,8 @@ const CreateNewGroupModal = ({ onClose }) => {
     const handleClinicChange = (clinicId) => {
         const clinic = userList?.my_clinics?.find(c => c.id === parseInt(clinicId));
         setSelectedClinic(clinic || null);
-        setSelectedMembers([]); // Clear members when clinic changes
-        setSelectAll(false); // Reset select all
+        setSelectedMembers([]); 
+        setSelectAll(false); 
     };
 
     const handleRoleChange = (e) => {

@@ -415,7 +415,7 @@ const MessageList = ({
                                                 <img
                                                     src={attachment.url}
                                                     alt="Attachment"
-                                                    className="max-w-sm rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                                                    className="max-w-xss rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                                                     onClick={() => window.open(attachment.url, '_blank')}
                                                 />
                                             ) : (
@@ -539,13 +539,15 @@ const MessageList = ({
 
             {/* AI Typing Indicator */}
             {isAiTyping && (roomType === "ai" || path === "charting-ai") && (
-                <div className="flex mb-4 justify-start">
-                    <div className="px-4 py-2 rounded-lg bg-purple-100 border border-purple-300">
+                <div className="flex mb-4 items-start gap-2">
+                    <figure>
+                        <img src={aiAvater} alt="" className="h-8 w-8 min-w-8 rounded-full border border-purple-200" />
+                    </figure>
+                    <div className="px-4 py-2 rounded-lg bg-purple-100 border border-purple-300 max-w-xs">
                         <div className="text-xs font-semibold text-purple-600 mb-1">
                             AI Assistant
                         </div>
-
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2">
                             <span className="text-sm text-gray-600">AI is thinking</span>
                             <div className="flex gap-1 ml-1">
                                 <span className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>

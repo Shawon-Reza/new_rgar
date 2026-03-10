@@ -4,6 +4,7 @@ import { FiLogOut } from 'react-icons/fi'
 import { base_URL } from '../../config/Config'
 import { CgProfile } from "react-icons/cg";
 import useIsBelowMd from '../../Components/hooks/useIsBelowMd';
+import { queryClient } from '../../main';
 
 
 const ProfileDropdown = ({ userProfileData }) => {
@@ -30,6 +31,9 @@ const ProfileDropdown = ({ userProfileData }) => {
     }, [isDropdownOpen])
 
     const handleLogout = () => {
+        // Clear React Query cache to avoid showing stale data after account switch.
+        queryClient.clear()
+
         // Clear tokens and user data
         localStorage.removeItem('auth')
 

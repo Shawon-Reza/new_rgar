@@ -160,7 +160,7 @@ const AdminDashboard = () => {
                             ? 'fixed inset-0 z-50 bg-white w-full h-full shadow-lg' // mobile full-screen sidebar
                             : isCollapsed
                                 ? 'w-[100px]' // collapsed width
-                                : 'w-[30%] lg:w-[30%] xl:w-[20%] 2xl:w-[18%]' // desktop sidebar width
+                                : 'w-[35%] md:w-[30%] lg:w-[25%] xl:w-[20%] 2xl:w-[18%]' // desktop sidebar width
                     }
                 >
                     <div className=' relative'>
@@ -189,7 +189,7 @@ const AdminDashboard = () => {
             {/* Main content area: hide on mobile when sidebar is open */}
             {(!isMobile || !isSidebarOpen) && (
                 <section className={`overflow-auto fle
-                 ${isMobile ? 'w-full' : isCollapsed ? 'w-[calc(100%-80px)]' : 'w-[70%] lg:w-[70%] xl:w-[80%] 2xl:w-[82%]'} `}>
+                 ${isMobile ? 'w-full' : isCollapsed ? 'w-[calc(100%-80px)]' : 'w-[65%] md:w-[70%] lg:w-[75%] xl:w-[80%] 2xl:w-[82%]'} `}>
 
                     <section className="w-full ">
 

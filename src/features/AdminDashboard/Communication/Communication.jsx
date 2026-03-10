@@ -9,6 +9,7 @@ import axiosApi from "../../../service/axiosInstance";
 import { queryClient } from "../../../main";
 import { useDebouncedCallback } from "use-debounce";
 import { base_URL } from "../../../config/Config";
+import { getAuthData } from "../../../config/Config";
 import { useLocation, useParams } from "react-router-dom";
 import useGetUserProfile from "../../../hooks/useGetUserProfile";
 import useUserPermissionsForOwn from "../../../hooks/useUserPermissionsForOwn";
@@ -34,6 +35,7 @@ const Communication = () => {
     const socketRef = useRef(null);
     const location = useLocation();
     const { userId } = useParams();
+    const { userId: authUserId } = getAuthData();
     const path = location.pathname.split('/')[2];
 
     // Debounced search handler - prevents input from losing focus
@@ -90,7 +92,7 @@ const Communication = () => {
 
     // ...................Fetch user's chat rooms list with filters.......................\\
     const { data: rooms = { read_only: false, ai_rooms: [], results: [] }, isLoading } = useQuery({
-        queryKey: ["myRooms", searchQuery, selectedRole, path, userId],
+        queryKey: ["myRooms", authUserId, searchQuery, selectedRole, path, userId],
         queryFn: async () => {
             let url;
 
@@ -309,7 +311,7 @@ const Communication = () => {
             {/* Main Layout */}
             <section className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-auto lg:h-[calc(100vh-190px)]">
                 {/* ......................Sidebar.................... */}
-                <section className="w-full lg:w-[40%] xl:w-[25%] h-auto lg:h-full bg-white/70 rounded-xl shadow-md p-3 sm:p-4 space-y-4 border border-gray-300">
+                <section className="w-full lg:w-[45%] xl:w-[35%] h-auto lg:h-full bg-white/70 rounded-xl shadow-md p-3 sm:p-4 space-y-4 border border-gray-300">
                     {/* Tabs */}
                     <div className="flex justify-between gap-3 pb-2">
                         <button
@@ -520,7 +522,7 @@ const Communication = () => {
                 </section>
 
                 {/* ............................Chat Panel............................. */}
-                <section className="w-full lg:w-[60%] xl:w-[75%] h-[65vh] sm:h-[70vh] lg:h-full bg-white/70 rounded-lg shadow-md p-2 sm:p-4">
+                <section className="w-full lg:w-[55%] xl:w-[65%] h-[65vh] sm:h-[70vh] lg:h-full bg-white/70 rounded-lg shadow-md p-2 sm:p-4">
                     <ChatPanel
                         chatRoom={selectedChat?.room_id ?? null}
                         roomType={selectedChat?.type ?? null}
