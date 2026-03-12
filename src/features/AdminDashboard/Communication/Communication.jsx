@@ -204,6 +204,19 @@ const Communication = () => {
         }
     }, [activeTab, rooms?.ai_rooms, selectedChat?.room_id]);
 
+    useEffect(() => {
+        if (activeTab !== "allChat") return;
+        if (!Array.isArray(rooms?.results) || rooms.results.length === 0) return;
+
+        const currentRoomExists = rooms.results.some(
+            (chat) => chat.room_id === selectedChat?.room_id
+        );
+
+        if (!selectedChat || !currentRoomExists) {
+            setSelectedChat(rooms.results[0]);
+        }
+    }, [activeTab, rooms?.results, selectedChat?.room_id]);
+
 
 
     const handleChatSelect = (chat) => {

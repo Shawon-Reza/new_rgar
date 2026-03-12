@@ -254,8 +254,9 @@ const MessageList = ({
             : (!isAI && Number(msg?.sender?.id) === Number(userId));
         const text = msg?.content || "";
         const isHighlighted = anchorMessageId !== null && msg.id === Number(anchorMessageId);
-        const senderName = isAI ? "AI Assistant" : (msg?.sender?.name || "Unknown User");
-        const senderLabel = isAI ? "AI Assistant" : (isMe ? "You" : senderName);
+        const aiDisplayName = path === "charting-ai" ? "Chartly AI" : "AI Assistant";
+        const senderName = isAI ? aiDisplayName : (msg?.sender?.name || "Unknown User");
+        const senderLabel = isAI ? aiDisplayName : (isMe ? "You" : senderName);
 
         const getSenderImageSrc = () => {
             if (isAI) return "";
@@ -364,6 +365,7 @@ const MessageList = ({
                 <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
                     <div className={`text-xs font-semibold mb-1 px-1 ${isAI ? "text-purple-600" : isMe ? "text-teal-700 text-right" : "text-primary"}`}>
                         {senderLabel}
+                        
                     </div>
 
                     <div
@@ -394,7 +396,7 @@ const MessageList = ({
                         )}
 
                         {/* ................Convert Markdown to HTML................. */}
-                        <div className="text-sm max-w-none break-words">
+                        <div className="text-sm max-w-xs xl:max-w-none break-words whitespace-pre-wrap [&_p]:mb-3 [&_p:last-child]:mb-0">
                             <ReactMarkdown>{text}</ReactMarkdown>
                             {/* {!isAI && (
                             <p className="break-words">
@@ -508,7 +510,7 @@ const MessageList = ({
             onMouseLeave={() => {
                 isSelectingRef.current = false;
             }}
-            className="flex-1 overflow-y-auto p-4 space-y-2 relative select-text"
+            className="flex-1 overflow-y-auto p-4 space-y-2 relative select-text ml-3"
         >
             {isFetchingNextPage && (
                 <div className="text-center text-sm text-gray-500 py-2">
@@ -545,7 +547,10 @@ const MessageList = ({
                     </figure>
                     <div className="px-4 py-2 rounded-lg bg-purple-100 border border-purple-300 max-w-xs">
                         <div className="text-xs font-semibold text-purple-600 mb-1">
-                            AI Assistant
+                            
+                            {
+                               path === "charting-ai" ? "Chartly AI":"AI Assistant" 
+                            }
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-gray-600">AI is thinking</span>
