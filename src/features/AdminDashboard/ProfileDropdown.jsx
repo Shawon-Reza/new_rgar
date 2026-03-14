@@ -48,7 +48,7 @@ const ProfileDropdown = ({ userProfileData }) => {
     return (
         <div className="relative" ref={dropdownRef}>
             <figure
-                className="w-11 h-11 cursor-pointer hover:opacity-80 transition-opacity"
+                className={`cursor-pointer hover:opacity-80 transition-opacity ${isMobile ? 'w-9 h-9' : 'w-11 h-11'}`}
                 onClick={toggleDropdown}
             >
                 <img

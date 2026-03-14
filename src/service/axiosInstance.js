@@ -44,9 +44,14 @@ let failedQueue = [];
 // ======================================= Redirect login page if another device logged in =======================================\\
 const shouldForceLogout = (payload) => {
   const detail = payload?.detail;
+  const message = payload?.message;
+  const code = payload?.code;
+  const hasAnotherDeviceMessage =
+    (typeof detail === "string" && /logged in from another device|please login again/i.test(detail)) ||
+    (typeof message === "string" && /logged in from another device|please login again/i.test(message));
+
   return (
-    typeof detail === "string" &&
-    /logged in from another device|please login again/i.test(detail)
+    code === "AUTHENTICATION_FAILED" || hasAnotherDeviceMessage
   );
 };
 

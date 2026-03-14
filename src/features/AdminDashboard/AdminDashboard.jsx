@@ -164,7 +164,11 @@ const AdminDashboard = () => {
                     }
                 >
                     <div className=' relative'>
-                        <AdminDashboardSidebar onClick={toggleSidebar} isCollapsed={isCollapsed} onToggleCollapse={toggleCollapse} />
+                        <AdminDashboardSidebar
+                            onClick={toggleSidebar}
+                            isCollapsed={isMobile ? false : isCollapsed}
+                            onToggleCollapse={isMobile ? undefined : toggleCollapse}
+                        />
 
                         {/* Sidebar toggle icon only on small screens */}
                         {isMobile && (
@@ -194,7 +198,7 @@ const AdminDashboard = () => {
                     <section className="w-full ">
 
                         {/* Navbar */}
-                        <nav className="w-full flex justify-between items-center px-6 py-4 shadow-2xl">
+                        <nav className={`w-full flex items-center shadow-2xl ${isMobile ? 'justify-between px-3 py-3' : 'justify-between px-6 py-4'}`}>
 
                             {!isMobile && (
                                 <div className=" flex gap-2">
@@ -219,24 +223,26 @@ const AdminDashboard = () => {
 
 
 
-                            <div className="flex items-center gap-5">
+                            <div className={`flex items-center ${isMobile ? 'w-full gap-2' : 'gap-5'}`}>
 
 
 
                                 {/* ============================== Profile Dropdown =================================== */}
-                                <ProfileDropdown userProfileData={userProfileData} />
+                                <div className={isMobile ? 'order-2 ml-auto' : ''}>
+                                    <ProfileDropdown userProfileData={userProfileData} />
+                                </div>
 
                                 {/* Sidebar toggle icon only on small screens */}
                                 {isMobile && (
                                     <button
                                         onClick={toggleSidebar}
                                         aria-label="Toggle sidebar"
-                                        className="p-2 rounded-md bg-transparent cursor-pointer"
+                                        className="order-1 p-1.5 rounded-md bg-transparent cursor-pointer"
                                     >
                                         {isSidebarOpen ? (
-                                            <TbLayoutSidebarFilled size={26} />
+                                            <TbLayoutSidebarFilled size={22} />
                                         ) : (
-                                            <BsLayoutSidebarInset size={26} />
+                                            <BsLayoutSidebarInset size={22} />
                                         )}
                                     </button>
                                 )}
@@ -246,11 +252,11 @@ const AdminDashboard = () => {
                                 {/* ======================Notifications Icons============================== */}
                                 <div
                                     ref={notificationRef}
-                                    className="relative p-3 rounded-full bg-[#00A4A61A] cursor-pointer"
+                                    className={`relative rounded-full bg-[#00A4A61A] cursor-pointer ${isMobile ? 'order-3 p-2' : 'p-3'}`}
                                     onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                                 >
 
-                                    <IoNotificationsOutline size={21} />
+                                    <IoNotificationsOutline size={isMobile ? 18 : 21} />
                                     {notificationCount > 0 && (
                                         <div className="absolute -top-1 -right-1 rounded-full bg-red-500 h-5 w-5 flex items-center justify-center text-white text-xs font-bold">
                                             {notificationCount > 99 ? '99+' : notificationCount}
@@ -259,7 +265,7 @@ const AdminDashboard = () => {
 
                                     {/* Notification Modal */}
                                     {isNotificationOpen && (
-                                        <div className={`absolute right-0 top-12 w-96 bg-white rounded-lg shadow-2xl z-50 max-h-[calc(100vh-200px)] overflow-hidden ${isMobile ? '-left-36' : ''}`}>
+                                        <div className="absolute right-0 top-12 w-[min(22rem,calc(100vw-1rem))] sm:w-96 bg-white rounded-lg shadow-2xl z-50 max-h-[calc(100vh-200px)] overflow-hidden">
                                             <Notifications
                                                 // notifications={notifications}
                                                 notificationCount={notificationCount}

@@ -29,7 +29,7 @@ const Settings = () => {
                                 <NavLink
                                     to={to}
                                     className={({ isActive }) =>
-                                        `block text-lg px-2 sm:px-4 py-1 rounded transition-colors hover:bg-secondary font-semibold ${isActive
+                                        `block sm:text-lg px-2 sm:px-4 py-1 rounded transition-colors hover:bg-secondary font-semibold ${isActive
                                             ? 'bg-primary text-white '    // active link styling
                                             : 'text-secondary hover:bg-primary ' // inactive link styling
                                         }`
