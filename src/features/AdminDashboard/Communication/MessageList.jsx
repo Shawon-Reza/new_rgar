@@ -369,7 +369,7 @@ const MessageList = ({
                     </div>
 
                     <div
-                        className={`px-4 py-2 rounded-lg max-w-xs md:max-w-md break-words
+                        className={`px-2 sm:px-4 py-2 rounded-lg max-w-xs md:max-w-md break-words
                 ${isAI && "bg-purple-100 border border-purple-300"}
                 ${isMe && "bg-teal-100 text-gray-900"}
                 ${!isMe && !isAI && "bg-blue-100 text-gray-900"}
@@ -396,7 +396,7 @@ const MessageList = ({
                         )}
 
                         {/* ................Convert Markdown to HTML................. */}
-                        <div className="text-sm max-w-[200px] sm:max-w-xs xl:max-w-none break-words whitespace-normal [&_h3]:mt-3 [&_h3]:mb-2 [&_h3]:font-semibold [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_table]:w-full [&_table]:border-collapse [&_th]:border [&_th]:border-gray-300 [&_th]:px-2 [&_th]:py-1 [&_th]:text-left [&_td]:border [&_td]:border-gray-300 [&_td]:px-2 [&_td]:py-1 [&_table]:text-xs sm:[&_table]:text-sm">
+                        <div className="text-sm max-w-[220px] sm:max-w-xs xl:max-w-none break-words whitespace-normal overflow-x-auto [&_h3]:mt-3 [&_h3]:mb-2 [&_h3]:font-semibold [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_table]:w-full [&_table]:min-w-[360px] [&_table]:border-collapse [&_table]:table-auto [&_th]:border [&_th]:border-gray-300 [&_th]:px-2 [&_th]:py-1 [&_th]:text-left [&_th]:whitespace-normal [&_td]:border [&_td]:border-gray-300 [&_td]:px-2 [&_td]:py-1 [&_td]:whitespace-normal [&_td]:break-words [&_table]:text-xs sm:[&_table]:text-sm">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
                             {/* {!isAI && (
                             <p className="break-words">
@@ -510,7 +510,7 @@ const MessageList = ({
             onMouseLeave={() => {
                 isSelectingRef.current = false;
             }}
-            className="flex-1 overflow-y-auto p-4 space-y-2 relative select-text ml-3"
+            className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 relative select-text ml-1 pl-1"
         >
             {isFetchingNextPage && (
                 <div className="text-center text-sm text-gray-500 py-2">
