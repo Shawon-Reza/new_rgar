@@ -11,7 +11,6 @@ import { getAuthData } from "../../../config/Config";
 import MessageList from "./MessageList";
 import { useLocation } from "react-router-dom";
 import ActionsDropdown from "./ActionsDropdown";
-import { CiCirclePlus } from "react-icons/ci";
 import ReactMarkdown from 'react-markdown';
 
 const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardConsumed, avatar, avatarNode }) => {
@@ -22,6 +21,11 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [forwardedDraft, setForwardedDraft] = useState("");
+  const [chartingMode, setChartingMode] = useState(() => {
+    if (typeof window === "undefined") return "chart";
+    const savedMode = window.localStorage.getItem("chartingMode");
+    return savedMode === "normal-text" || savedMode === "chart" ? savedMode : "chart";
+  });
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const actionsDropdownRef = useRef(null);
@@ -204,6 +208,12 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     };
   }, [showActions]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("chartingMode", chartingMode);
+    }
+  }, [chartingMode]);
+
   const sendMessage = async ({ content, files = [] }) => {
     if (!content.trim() && files.length === 0) return;
     if (isAiRoom && isAiTyping) return;
@@ -250,6 +260,10 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
       const formData = new FormData();
       // Just appent paylod fields to formData
       formData.append("content", contentPlain);
+      const messageType = path === "charting-ai"
+        ? (chartingMode === "chart" ? "chart" : "text")
+        : "text";
+      formData.append("message_type", messageType);
       if (mentionIds.length > 0) {
         // Backend expects comma-separated IDs (e.g., "2,5"); single value is fine too
         formData.append("mention_user_ids", mentionIds.join(","));
@@ -473,6 +487,40 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
 
           {/* ........................................................Input Area For send text................................................ */}
           <div className="p-2 sm:p-4 border-t border-gray-300">
+            {path === "charting-ai" && (
+              <div className="mb-3 flex w-full items-center justify-center sm:justify-end">
+                <div className="flex w-full max-w-full flex-wrap items-center justify-center gap-2 sm:w-auto sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setChartingMode("chart")}
+                    className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${chartingMode === "chart"
+                      ? "bg-cyan-600 text-white"
+                      : "bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
+                      }`}
+                  >
+                    Chart
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChartingMode("normal-text")}
+                    className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${chartingMode === "normal-text"
+                      ? "bg-cyan-600 text-white"
+                      : "bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
+                      }`}
+                  >
+                    Normal Text
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResetCase}
+                    disabled={isInputDisabled || isAiTyping}
+                    className="rounded-full bg-cyan-100 px-4 py-2 text-sm font-medium text-cyan-700 transition-colors hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    New case
+                  </button>
+                </div>
+              </div>
+            )}
             {/* ====================================== Forwarded message display ==================================== */}
             {forwardedDraft && (
               <div className="mb-3 rounded-lg border border-gray-300 bg-gray-50 p-3 max-h-[140px] overflow-y-auto">
