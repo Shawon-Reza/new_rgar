@@ -214,7 +214,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     }
   }, [chartingMode]);
 
-  const sendMessage = async ({ content, files = [] }) => {
+  const sendMessage = async ({ content, files = [], suppressAiTyping = false }) => {
     if (!content.trim() && files.length === 0) return;
     if (isAiRoom && isAiTyping) return;
 
@@ -229,7 +229,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     setInputMessage("");
 
     // Show AI typing indicator if this is an AI chat
-    if (isAiRoom) {
+    if (isAiRoom && !suppressAiTyping) {
       setIsAiTyping(true);
     }
 
@@ -306,7 +306,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   };
 
   const handleResetCase = async () => {
-    await sendMessage({ content: "new case" });
+    await sendMessage({ content: "new case", suppressAiTyping: true });
   };
 
 
