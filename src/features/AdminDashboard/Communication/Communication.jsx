@@ -111,6 +111,8 @@ const Communication = () => {
         staleTime: 1000 * 30, // Optional: reduce refetch frequency
     });
 
+    console.log(rooms)
+
 
     // WebSocket for real-time room updates
     useEffect(() => {

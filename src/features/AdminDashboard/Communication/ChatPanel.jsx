@@ -37,6 +37,11 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   const userId = userInfo?.user_id;
   const location = useLocation();
   const path = location.pathname.split('/')[2];
+
+
+  console.log(path)
+
+
   const isAiRoom = roomType === "ai" || path === "charting-ai";
 
   // =============================Fetch room members for mentions (group rooms only)=================================\\
@@ -49,6 +54,8 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     enabled: !!chatRoom && roomType === "group",
     staleTime: 5 * 60 * 1000,
   });
+
+
   // ======================================= Messages (HTTP with infinite scroll) =======================================\\
   const {
     data,

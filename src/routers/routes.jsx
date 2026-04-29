@@ -29,6 +29,7 @@ import ClinicwiseChatHistory from "../features/AdminDashboard/ClinicwiseChatHist
 import NotificationsToggle from "../features/AdminDashboard/NotificationsToggle";
 import Communication from "../features/AdminDashboard/Communication/Communication";
 import Charting_AI from "../features/AdminDashboard/Communication/Charting_AI";
+import AiAssistantPage from "../features/AdminDashboard/Communication/AiAssistantPage";
 import Theme from "../features/AdminDashboard/Theme";
 import GivenAssessmentDetailsFromUser from "../features/AdminDashboard/DashboardContent/GivenAssessmentDetailsFromUser";
 import RolesTypes from "../features/AdminDashboard/RolesTypes";
@@ -64,7 +65,8 @@ export const router = createBrowserRouter([
             // Define child routes for admin dashboard here
             {
                 index: true,
-                element: <DashboardContent></DashboardContent>,
+                element: <Communication></Communication>,
+                // element: <DashboardContent></DashboardContent>,
             },
             {
                 path: "dashboard",
@@ -81,6 +83,10 @@ export const router = createBrowserRouter([
             {
                 path: "communication",
                 element: <Communication></Communication>,
+            },
+            {
+                path: "ai-assistant",
+                element: <AiAssistantPage></AiAssistantPage>,
             },
             {
                 path: "charting-ai",

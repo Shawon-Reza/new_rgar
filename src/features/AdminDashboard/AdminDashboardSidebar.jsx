@@ -14,6 +14,7 @@ import useGetUserProfile from "../../hooks/useGetUserProfile"
 import { GoHistory } from "react-icons/go"
 import { RiChatVoiceAiLine } from "react-icons/ri";
 import useIsBelowMd from "../../Components/hooks/useIsBelowMd"
+import { AiFillWechat } from "react-icons/ai";
 
 const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: FiGrid },
@@ -117,20 +118,7 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
 
             {/* =============================================== Navigation Menu ==============================================*/}
             <nav className="flex-1 p-4 space-y-2.5 overflow-y-auto">
-                <NavLink
-                    to="/admin/dashboard"
-                    onClick={onClick}
-                    title={isCollapsed ? 'Dashboard' : ''}
-                    className={({ isActive }) =>
-                        `w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-lg text-2xl text-gray-600 text-default opacity-90 transform transition-all duration-200 ease-in-out ${isActive ? " bg-white/35" : "hover:border hover:border-[#E2E2E2] "
-                        }`
-                    }
-                >
-                    <FiGrid size={21} />
-                    {!isCollapsed && (
-                        <span className="font-semibold text-sm sm:text-xl xl:text-2xl">Dashboard</span>
-                    )}
-                </NavLink>
+
 
                 <NavLink
                     to="/admin/communication"
@@ -146,6 +134,51 @@ export default function AdminDashboardSidebar({ onClick, isCollapsed, onToggleCo
                         <span className="font-semibold text-sm sm:text-xl xl:text-2xl">Communication</span>
                     )}
                 </NavLink>
+                <NavLink
+                    to="/admin/dashboard"
+                    onClick={onClick}
+                    title={isCollapsed ? 'Dashboard' : ''}
+                    className={({ isActive }) =>
+                        `w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-lg text-2xl text-gray-600 text-default opacity-90 transform transition-all duration-200 ease-in-out ${isActive ? " bg-white/35" : "hover:border hover:border-[#E2E2E2] "
+                        }`
+                    }
+                >
+                    <FiGrid size={21} />
+                    {!isCollapsed && (
+                        <span className="font-semibold text-sm sm:text-xl xl:text-2xl">Dashboard</span>
+                    )}
+                </NavLink>
+
+
+
+
+
+
+
+
+
+                <NavLink
+                    to="/admin/ai-assistant"
+                    onClick={onClick}
+                    title={isCollapsed ? 'Dashboard' : ''}
+                    className={({ isActive }) =>
+                        `w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-lg text-2xl text-gray-600 text-default opacity-90 transform transition-all duration-200 ease-in-out ${isActive ? " bg-white/35" : "hover:border hover:border-[#E2E2E2] "
+                        }`
+                    }
+                >
+                    <AiFillWechat  size={21} />
+                    {!isCollapsed && (
+                        <span className="font-semibold text-sm sm:text-xl xl:text-2xl">Ai Assistant</span>
+                    )}
+                </NavLink>
+
+
+
+
+
+
+
+
                 {/* //====================================== Chartly AI For Doctor ======================================\\ */}
                 {
                     (userProfileData?.role === "doctor" || userProfileData?.role === "president") &&
