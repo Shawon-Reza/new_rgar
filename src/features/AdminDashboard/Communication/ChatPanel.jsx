@@ -65,6 +65,7 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   const actionsDropdownRef = useRef(null);
   const shouldFetchMentionRef = useRef(false);
   const lastForwardedRef = useRef(null);
+  const streamingMessageIdRef = useRef(null);
 
   // Auth
   const { userInfo } = getAuthData();
@@ -78,17 +79,27 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   const isAiRoom = roomType === "ai" || path === "charting-ai";
 
   const addMessageToCache = useCallback((message) => {
-    if (!message?.id) return;
+    if (!message?.id) {
+      console.warn("addMessageToCache: No message ID", message);
+      return;
+    }
 
     queryClient.setQueryData(["messages", userId, chatRoom], (old) => {
-      if (!old?.pages?.length) return old;
+      if (!old?.pages?.length) {
+        console.warn("addMessageToCache: old cache is empty or has no pages", old);
+        return old;
+      }
 
       const exists = old.pages.some((page) =>
         page.results?.some((currentMessage) => currentMessage.id === message.id)
       );
 
-      if (exists) return old;
+      if (exists) {
+        console.log("addMessageToCache: message already exists", message.id);
+        return old;
+      }
 
+      console.log("addMessageToCache: adding message to cache", message);
       return {
         ...old,
         pages: old.pages.map((page, index) =>
@@ -113,6 +124,8 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
   // ======================================= Messages (HTTP with infinite scroll) =======================================\\
   const {
     data,
+    error,
+    isError,
     fetchNextPage,
     fetchPreviousPage,
     hasNextPage,
@@ -132,11 +145,33 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
     },
     getNextPageParam: (lastPage) => lastPage?.next_cursor ?? null,
     getPreviousPageParam: (firstPage) => firstPage?.previous_cursor ?? null,
+    initialPageParam: null,
     staleTime: 5 * 60 * 1000, // Keep data fresh for 5 minutes
     gcTime: 10 * 60 * 1000,   // Keep in cache for 10 minutes
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
+
+  // Diagnostic useEffect
+  useEffect(() => {
+    console.log("[Diagnostic] Component mounted. chatRoom:", chatRoom, "userId:", userId);
+    if (!chatRoom) return;
+
+    const runDiagnostic = async () => {
+      try {
+        console.log("[Diagnostic] Fetching messages manually...");
+        const res = await axiosApi.get(`/api/v1/rooms/${chatRoom}/messages/`);
+        console.log("[Diagnostic] Manual fetch successful:", res.data);
+      } catch (err) {
+        console.error("[Diagnostic] Manual fetch failed:", err);
+      }
+      
+      const cacheState = queryClient.getQueryState(["messages", userId, chatRoom]);
+      console.log("[Diagnostic] React Query cache state:", cacheState);
+    };
+
+    runDiagnostic();
+  }, [chatRoom, userId, queryClient]);
 
   // ...........................**Chat info**........................... //
   // data?.pages[0].chatInfo)
@@ -168,9 +203,12 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
 
   // Flatten and reverse to show oldest -> newest
   const messages = useMemo(() => {
+    console.log("Recomputing messages. data:", data, "isError:", isError, "error:", error);
     const list = data?.pages.flatMap((p) => p.results) ?? [];
     // Ensure deterministic order oldest -> newest
-    return [...list].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    const sorted = [...list].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    console.log("Sorted messages:", sorted);
+    return sorted;
   }, [data]);
 
   // Anchor message id when navigating from notification
@@ -258,6 +296,67 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
       roomId: chatRoom,
 
       onMessage: (payload) => {
+        // Handle AI stream
+        if (payload.type === "ai_stream") {
+          const streamData = payload.data;
+          
+          if (streamData.phase === "start") {
+            console.log("AI stream start", streamData);
+            // Turn off the typing indicator since we started streaming
+            setIsAiTyping(false);
+            streamingMessageIdRef.current = `stream-${streamData.message_id}`;
+            const optimisticMsg = {
+              id: streamingMessageIdRef.current,
+              content: "",
+              is_ai: true,
+              created_at: new Date().toISOString(),
+              sender: { id: "ai", name: "Chartly AI", role: "ai", picture: "" },
+              room_id: streamData.room_id
+            };
+            addMessageToCache(optimisticMsg);
+          } else if (streamData.phase === "chunk" && streamingMessageIdRef.current) {
+            console.log("AI stream chunk", streamData.chunk);
+            queryClient.setQueryData(["messages", userId, chatRoom], (old) => {
+              if (!old?.pages?.length) {
+                console.warn("Chunk: old cache has no pages", old);
+                return old;
+              }
+              return {
+                ...old,
+                pages: old.pages.map((page) => ({
+                  ...page,
+                  results: page.results.map((msg) =>
+                    msg.id === streamingMessageIdRef.current
+                      ? { ...msg, content: msg.content + (streamData.chunk || "") }
+                      : msg
+                  ),
+                })),
+              };
+            });
+          } else if (streamData.phase === "done") {
+            const finalMessage = streamData.message;
+            if (finalMessage) {
+              queryClient.setQueryData(["messages", userId, chatRoom], (old) => {
+                if (!old?.pages?.length) return old;
+                return {
+                  ...old,
+                  pages: old.pages.map((page) => ({
+                    ...page,
+                    results: page.results.map((msg) =>
+                      msg.id === streamingMessageIdRef.current
+                        ? finalMessage
+                        : msg
+                    ),
+                  })),
+                };
+              });
+            }
+            streamingMessageIdRef.current = null;
+            setIsAiTyping(false);
+          }
+          return;
+        }
+
         if (payload.type !== "message") return;
         const newMessage = payload.data;
         const isNewCaseSeparator = newMessage?.type === "newcase_separator" || newMessage?.is_separator;
