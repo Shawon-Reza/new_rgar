@@ -401,12 +401,16 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
 
     const optimisticMsg = {
       id: `temp-${Date.now()}`,
+      content: content,
       text: content,
+      is_ai: false,
+      room_id: chatRoom,
       created_at: new Date().toISOString(),
-      sender: { id: userId },
+      sender: { id: userId, name: safeUser.name, picture: safeUser.avatar },
       avatar: safeUser.avatar,
     };
 
+    addMessageToCache(optimisticMsg);
     setInputMessage("");
 
     // Show AI typing indicator if this is an AI chat
@@ -477,8 +481,20 @@ const ChatPanel = ({ chatRoom, roomType, activeTab, forwardedMessage, onForwardC
       if (isAiRoom) {
         setIsAiTyping(false);
       }
+    } finally {
+      // Remove the optimistic message since the real one will arrive via WebSocket
+      queryClient.setQueryData(["messages", userId, chatRoom], (old) => {
+        if (!old?.pages?.length) return old;
+        return {
+          ...old,
+          pages: old.pages.map(page => ({
+            ...page,
+            results: page.results?.filter(msg => msg.id !== optimisticMsg.id)
+          }))
+        };
+      });
     }
-  }, [chatRoom, path, roomType, userId, isAiRoom, isAiTyping, chartingMode, safeUser.avatar, addMessageToCache]);
+  }, [chatRoom, path, roomType, userId, isAiRoom, isAiTyping, chartingMode, safeUser.avatar, addMessageToCache, queryClient]);
 
   // ============================================Send message with optimistic update=====================================\\
   const handleSendMessage = async () => {

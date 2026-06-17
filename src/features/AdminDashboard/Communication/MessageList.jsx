@@ -499,6 +499,8 @@ const MessageList = ({
     }
   };
 
+  const lastMessageContentRef = useRef("");
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -508,11 +510,14 @@ const MessageList = ({
     }
 
     const messageCountChanged = messages.length !== prevMessageCount;
+    const lastMessage = messages[messages.length - 1];
+    const lastMessageContent = lastMessage?.content || "";
+    const contentChanged = lastMessageContent !== lastMessageContentRef.current;
 
-    if (messageCountChanged && wasAtBottomBeforeFetchRef.current) {
+    if ((messageCountChanged || contentChanged) && wasAtBottomBeforeFetchRef.current) {
       const messageDifference = messages.length - prevMessageCount;
 
-      if (messageDifference > 0) {
+      if (messageDifference > 0 || contentChanged) {
         setTimeout(() => {
           lastProgrammaticScrollRef.current = Date.now();
           container.scrollTop = container.scrollHeight - container.clientHeight;
@@ -520,11 +525,13 @@ const MessageList = ({
       }
 
       setPrevMessageCount(messages.length);
-    } else if (messageCountChanged) {
+      lastMessageContentRef.current = lastMessageContent;
+    } else if (messageCountChanged || contentChanged) {
       setPrevMessageCount(messages.length);
+      lastMessageContentRef.current = lastMessageContent;
     }
   }, [
-    messages.length,
+    messages,
     isFetchingNextPage,
     isFetchingPreviousPage,
     prevMessageCount,
