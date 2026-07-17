@@ -41,8 +41,17 @@ const NewCaseSeparator = memo(({ item, isChartingAI }) => {
 
   if (isChartingAI) {
     return (
-      <div className="my-3 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2B76F4]">
-        New Case - {time}
+      <div className="flex items-center w-full my-3">
+        {/* Left Line */}
+        <div className="flex-1 border-b h-px border-gray-600"></div>
+
+        {/* Text */}
+        <div className="px-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2B76F4] whitespace-nowrap">
+          New Case - {time}
+        </div>
+
+        {/* Right Line */}
+        <div className="flex-1 border-b h-px border-gray-600"></div>
       </div>
     );
   }
@@ -92,7 +101,7 @@ const MessageBubble = memo(
     });
 
     const bubbleClassName = isChartingResponse
-      ? `relative w-auto max-w-[340px] overflow-hidden break-words rounded-2xl border border-[#d8e3f3] bg-white px-4 py-3 text-[#253044] shadow-[0_3px_9px_rgba(15,23,42,0.12)] ring-1 ring-white/80 md:w-full md:max-w-[820px] md:px-5 md:py-4 ${isHighlighted ? "ring-2 ring-yellow-400 shadow-lg" : ""}`
+      ? `relative w-auto max-w-[340px] md:max-w-[70rem] overflow-hidden break-words rounded-2xl border border-[#d8e3f3] bg-white px-4 py-3 text-[#253044] shadow-[0_3px_9px_rgba(15,23,42,0.12)] ring-1 ring-white/80 md:w-full  md:px-5 md:py-4 ${isHighlighted ? "ring-2 ring-yellow-400 shadow-lg" : ""}`
       : isChartingMessage
         ? `px-4 py-3 rounded-2xl max-w-[340px] md:max-w-4xl break-words shadow-[0_3px_9px_rgba(15,23,42,0.12)] ${
             isAI
@@ -514,7 +523,10 @@ const MessageList = ({
     const lastMessageContent = lastMessage?.content || "";
     const contentChanged = lastMessageContent !== lastMessageContentRef.current;
 
-    if ((messageCountChanged || contentChanged) && wasAtBottomBeforeFetchRef.current) {
+    if (
+      (messageCountChanged || contentChanged) &&
+      wasAtBottomBeforeFetchRef.current
+    ) {
       const messageDifference = messages.length - prevMessageCount;
 
       if (messageDifference > 0 || contentChanged) {
@@ -530,12 +542,7 @@ const MessageList = ({
       setPrevMessageCount(messages.length);
       lastMessageContentRef.current = lastMessageContent;
     }
-  }, [
-    messages,
-    isFetchingNextPage,
-    isFetchingPreviousPage,
-    prevMessageCount,
-  ]);
+  }, [messages, isFetchingNextPage, isFetchingPreviousPage, prevMessageCount]);
 
   useEffect(() => {
     const container = containerRef.current;
