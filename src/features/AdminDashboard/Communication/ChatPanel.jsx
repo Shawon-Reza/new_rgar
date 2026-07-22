@@ -108,7 +108,8 @@ const ChatPanel = ({
   const isTeamChatPage = path === "communication";
   const isModernChatSurface =
     isChartingPage || isAssistancePage || isTeamChatPage;
-  const isAiRoom = roomType === "ai" || path === "charting-ai";
+  const isAiRoom =
+    roomType === "ai" || roomType === "ai_charting" || path === "charting-ai";
 
   const addMessageToCache = useCallback(
     (message) => {
@@ -508,6 +509,12 @@ const ChatPanel = ({
                 picture: safeUser.avatar,
               },
               avatar: safeUser.avatar,
+              attachments: files.map((f, i) => ({
+                id: `temp-att-${Date.now()}-${i}`,
+                url: URL.createObjectURL(f),
+                name: f.name,
+                file_type: f.type,
+              })),
             };
 
       addMessageToCache(optimisticMsg);
@@ -1045,7 +1052,8 @@ const ChatPanel = ({
               (roomType === "group" ||
                 roomType === "private" ||
                 roomType === "ai" ||
-                roomType === "ai_charting") && (
+                roomType === "ai_charting" ||
+                isChartingPage) && (
                 <div className="mb-3 flex flex-wrap gap-2">
                   {attachments.map((file, index) => (
                     <div
@@ -1067,9 +1075,11 @@ const ChatPanel = ({
                 </div>
               )}
             <div className="flex items-center gap-2 sm:gap-3 w-full min-w-0">
-              {/* ===================================== File upload button for group and private ================================== */}
+              {/* ===================================== File upload button ================================== */}
               {(roomType === "group" ||
                 roomType === "private" ||
+                roomType === "ai_charting" ||
+                isChartingPage ||
                 (roomType === "ai" && !isAssistancePage)) && (
                 <>
                   <input
@@ -1086,7 +1096,9 @@ const ChatPanel = ({
                     className={
                       isTeamChatPage
                         ? "grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[#a5d9ee] bg-[#e3f9ff] text-[#15a0d3] shadow-sm transition hover:border-[#2B76F4] hover:text-[#2B76F4] disabled:opacity-50 md:border-[#d8dee8] md:bg-white md:text-[#74839f]"
-                        : "text-gray-600 hover:text-gray-800 disabled:opacity-50 cursor-pointer shrink-0"
+                        : isModernChatSurface
+                          ? "grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[#d8dee8] bg-white text-[#74839f] shadow-sm transition hover:border-[#2B76F4] hover:text-[#2B76F4] disabled:opacity-50 cursor-pointer"
+                          : "text-gray-600 hover:text-gray-800 disabled:opacity-50 cursor-pointer shrink-0"
                     }
                     title="Attach files"
                   >
@@ -1096,7 +1108,7 @@ const ChatPanel = ({
                         <FiPaperclip className="hidden md:block" size={18} />
                       </>
                     ) : (
-                      <FiPaperclip size={24} />
+                      <FiPaperclip size={isModernChatSurface ? 18 : 24} />
                     )}
                   </button>
                 </>

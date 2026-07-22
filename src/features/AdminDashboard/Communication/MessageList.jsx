@@ -176,8 +176,16 @@ const MessageBubble = memo(
 
     const senderImageSrc = getSenderImageSrc();
 
+    const getAttachmentUrl = (url) => {
+      if (!url) return "";
+      if (/^https?:\/\//i.test(url) || url.startsWith("blob:")) return url;
+      return `${base_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+    };
+
     const getFileType = (url) => {
-      const ext = url.split(".").pop().toLowerCase();
+      if (!url) return "file";
+      const cleanUrl = url.split("?")[0];
+      const ext = cleanUrl.split(".").pop().toLowerCase();
       if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext))
         return "image";
       if (ext === "pdf") return "pdf";
@@ -320,27 +328,30 @@ const MessageBubble = memo(
 
             {msg?.attachments && msg.attachments.length > 0 && (
               <div className="mt-3 space-y-2">
-                {msg.attachments.map((attachment) => {
+                {msg.attachments.map((attachment, idx) => {
+                  const fullUrl = getAttachmentUrl(attachment.url);
                   const fileType = getFileType(attachment.url);
+                  const fileName =
+                    attachment.name || attachment.file_name || "Attachment";
                   return (
-                    <div key={attachment.id}>
+                    <div key={attachment.id || idx}>
                       {fileType === "image" ? (
                         <img
-                          src={attachment.url}
-                          alt="Attachment"
-                          className="max-w-xss rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => window.open(attachment.url, "_blank")}
+                          src={fullUrl}
+                          alt={fileName}
+                          className="max-w-xs rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => window.open(fullUrl, "_blank")}
                         />
                       ) : (
                         <a
-                          href={attachment.url}
+                          href={fullUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 p-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors max-w-xs"
                         >
-                          <FiDownload size={16} className="text-gray-700" />
+                          <FiDownload size={16} className="text-gray-700 shrink-0" />
                           <span className="text-sm font-medium text-gray-800 truncate">
-                            {getFileIcon(fileType)}
+                            {getFileIcon(fileType)} {fileName}
                           </span>
                         </a>
                       )}
@@ -833,7 +844,10 @@ const MessageList = ({
         })
       )}
 
-      {isAiTyping && (roomType === "ai" || path === "charting-ai") && (
+      {isAiTyping &&
+        (roomType === "ai" ||
+          roomType === "ai_charting" ||
+          path === "charting-ai") && (
         <div className="flex mb-4 items-start gap-2">
           <figure>
             <img
