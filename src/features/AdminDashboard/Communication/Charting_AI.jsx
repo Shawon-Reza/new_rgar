@@ -59,11 +59,16 @@ const Charting_AI = () => {
         return null
     }
 
+    const rawData = createAiChartingRoomMutation.data;
+    const roomData = rawData?.data || rawData?.room || rawData;
+    const roomId = roomData?.room_id || roomData?.id || rawData?.room_id;
+    const roomType = roomData?.type || rawData?.type || "ai_charting";
+
     return (
         <section className="h-full">
             <ChatPanel
-                chatRoom={createAiChartingRoomMutation.data.room_id}
-                roomType={createAiChartingRoomMutation.data.type}
+                chatRoom={roomId}
+                roomType={roomType}
             />
         </section>
     )

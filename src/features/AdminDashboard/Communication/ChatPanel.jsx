@@ -111,55 +111,65 @@ const ChatPanel = ({
   const isAiRoom =
     roomType === "ai" || roomType === "ai_charting" || path === "charting-ai";
 
+  const normalizedChatRoom = chatRoom ? String(chatRoom) : null;
+
   const addMessageToCache = useCallback(
     (message) => {
-      if (!message?.id) {
-        console.warn("addMessageToCache: No message ID", message);
+      if (!message?.id || !normalizedChatRoom) {
+        console.warn("addMessageToCache: No message ID or chatRoom", message);
         return;
       }
 
-      queryClient.setQueryData(["messages", userId, chatRoom], (old) => {
+      queryClient.setQueryData(["messages", normalizedChatRoom], (old) => {
         if (!old?.pages?.length) {
-          console.warn(
-            "addMessageToCache: old cache is empty or has no pages",
-            old,
-          );
-          return old;
+          return {
+            pageParams: [null],
+            pages: [{ results: [message], room: null, next_cursor: null }],
+          };
         }
 
-        const exists = old.pages.some((page) =>
-          page.results?.some(
-            (currentMessage) => currentMessage.id === message.id,
-          ),
-        );
+        const exists = old.pages.some((page) => {
+          const list = Array.isArray(page?.results)
+            ? page.results
+            : Array.isArray(page?.data?.results)
+              ? page.data.results
+              : Array.isArray(page?.data)
+                ? page.data
+                : [];
+          return list.some((m) => m.id === message.id);
+        });
 
         if (exists) {
-          console.log("addMessageToCache: message already exists", message.id);
           return old;
         }
 
-        console.log("addMessageToCache: adding message to cache", message);
         return {
           ...old,
           pages: old.pages.map((page, index) =>
             index === 0
-              ? { ...page, results: [message, ...(page.results || [])] }
+              ? {
+                  ...page,
+                  results: [
+                    message,
+                    ...(page.results || page.data?.results || (Array.isArray(page.data) ? page.data : [])),
+                  ],
+                }
               : page,
           ),
         };
       });
     },
-    [chatRoom, queryClient, userId],
+    [normalizedChatRoom, queryClient],
   );
 
   // =============================Fetch room members for mentions (group rooms only)=================================\\
   const { data: roomMembersData } = useQuery({
-    queryKey: ["roomMembersForMentions", chatRoom],
+    queryKey: ["roomMembersForMentions", normalizedChatRoom],
     queryFn: async () => {
-      const res = await axiosApi.get(`/api/v1/rooms/${chatRoom}/members/`);
+      const res = await axiosApi.get(`/api/v1/rooms/${normalizedChatRoom}/members/`);
       return res.data;
     },
-    enabled: !!chatRoom && roomType === "group",
+    enabled: !!normalizedChatRoom && roomType === "group",
     staleTime: 5 * 60 * 1000,
   });
   // ======================================= Messages (HTTP with infinite scroll) =======================================\\
@@ -174,22 +184,65 @@ const ChatPanel = ({
     isFetchingNextPage,
     isFetchingPreviousPage,
   } = useInfiniteQuery({
-    queryKey: ["messages", userId, chatRoom],
-    enabled: !!chatRoom,
+    queryKey: ["messages", normalizedChatRoom],
+    enabled: !!normalizedChatRoom,
     queryFn: async ({ pageParam = null }) => {
-      const res = await axiosApi.get(`/api/v1/rooms/${chatRoom}/messages/`, {
-        params: { cursor: pageParam },
+      const params = pageParam ? { cursor: pageParam } : {};
+      const res = await axiosApi.get(`/api/v1/rooms/${normalizedChatRoom}/messages/`, {
+        params,
       });
 
-      return res.data;
+      const raw = res.data;
+      const payload =
+        raw?.data && typeof raw.data === "object" && !Array.isArray(raw.data)
+          ? raw.data
+          : raw;
+
+      const results = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.results)
+          ? payload.results
+          : Array.isArray(payload?.messages)
+            ? payload.messages
+            : Array.isArray(raw?.results)
+              ? raw.results
+              : Array.isArray(raw?.data)
+                ? raw.data
+                : [];
+
+      const room = payload?.room || raw?.room || null;
+      const next_cursor = payload?.next_cursor ?? raw?.next_cursor ?? null;
+      const previous_cursor =
+        payload?.previous_cursor ?? raw?.previous_cursor ?? null;
+      const chat_blocked = payload?.chat_blocked ?? raw?.chat_blocked ?? false;
+      const can_send = payload?.can_send ?? raw?.can_send ?? true;
+
+      return {
+        ...raw,
+        ...payload,
+        results,
+        room,
+        next_cursor,
+        previous_cursor,
+        chat_blocked,
+        can_send,
+      };
     },
-    getNextPageParam: (lastPage) => lastPage?.next_cursor ?? null,
-    getPreviousPageParam: (firstPage) => firstPage?.previous_cursor ?? null,
+    getNextPageParam: (lastPage) => {
+      const cursor =
+        lastPage?.next_cursor ?? lastPage?.data?.next_cursor ?? null;
+      return cursor && cursor !== "null" ? cursor : null;
+    },
+    getPreviousPageParam: (firstPage) => {
+      const cursor =
+        firstPage?.previous_cursor ?? firstPage?.data?.previous_cursor ?? null;
+      return cursor && cursor !== "null" ? cursor : null;
+    },
     initialPageParam: null,
-    staleTime: 5 * 60 * 1000, // Keep data fresh for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    staleTime: 0,
+    gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: "always",
   });
 
   // Diagnostic useEffect
@@ -213,8 +266,7 @@ const ChatPanel = ({
 
       const cacheState = queryClient.getQueryState([
         "messages",
-        userId,
-        chatRoom,
+        normalizedChatRoom,
       ]);
       console.log("[Diagnostic] React Query cache state:", cacheState);
     };
@@ -222,54 +274,104 @@ const ChatPanel = ({
     runDiagnostic();
   }, [chatRoom, userId, queryClient]);
 
+  // Direct fallback state for immediate rendering
+  const [directMessages, setDirectMessages] = useState([]);
+
+  const fetchDirectMessages = useCallback(async () => {
+    if (!normalizedChatRoom) return;
+    try {
+      const res = await axiosApi.get(`/api/v1/rooms/${normalizedChatRoom}/messages/`);
+      const raw = res.data;
+      const payload =
+        raw?.data && typeof raw.data === "object" && !Array.isArray(raw.data)
+          ? raw.data
+          : raw;
+
+      const results = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.results)
+          ? payload.results
+          : Array.isArray(payload?.messages)
+            ? payload.messages
+            : Array.isArray(raw?.results)
+              ? raw.results
+              : Array.isArray(raw?.data)
+                ? raw.data
+                : [];
+
+      setDirectMessages(results);
+    } catch (err) {
+      console.error("[ChatPanel] Error fetching direct messages:", err);
+    }
+  }, [normalizedChatRoom]);
+
+  useEffect(() => {
+    fetchDirectMessages();
+  }, [fetchDirectMessages]);
+
   // ...........................**Chat info**........................... //
-  // data?.pages[0].chatInfo)
-  const safeUser = {
-    name: data?.pages[0]?.room?.name || "Unknown User",
-    role: data?.pages[0]?.room?.display_role || "unknown",
-    avatar:
-      `https://backend.getkyroai.com${data?.pages[0]?.room?.image}` ||
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Chat",
-  };
+  const safeUser = useMemo(() => {
+    const page = data?.pages?.[0];
+    const room = page?.room || page?.data?.room || {};
+    return {
+      name: room.name || "Unknown User",
+      role: room.display_role || "unknown",
+      avatar: room.image
+        ? `https://backend.getkyroai.com${room.image}`
+        : "https://api.dicebear.com/7.x/avataaars/svg?seed=Chat",
+    };
+  }, [data]);
+
   const headerAvatar = avatar
     ? `https://backend.getkyroai.com${avatar}`
     : safeUser.avatar;
 
   const isInputDisabled =
-    data?.pages[0]?.room?.chat_blocked ||
+    data?.pages?.[0]?.chat_blocked ||
+    data?.pages?.[0]?.room?.chat_blocked ||
+    data?.pages?.[0]?.data?.chat_blocked ||
     path === "user-management" ||
-    data?.pages[0]?.room?.can_send === false;
+    data?.pages?.[0]?.can_send === false ||
+    data?.pages?.[0]?.room?.can_send === false;
 
-  const inputPlaceholder = data?.pages[0]?.room?.chat_blocked
-    ? "Chat is blocked. You are not allowed to send messages until unblocked."
-    : data?.pages[0]?.room?.can_send === false
-      ? "User is currently inactive. Cannot send messages."
-      : isChartingPage
-        ? "Ask about coding, levels, or documentation..."
-        : isAssistancePage
-          ? "Ask KyroAI any questions..."
-          : isTeamChatPage
-            ? "Message or /ask to query AI..."
-            : "Type your message...";
+  const inputPlaceholder = isInputDisabled
+    ? "Chat is blocked or user inactive. Cannot send messages."
+    : isChartingPage
+      ? "Ask about coding, levels, or documentation..."
+      : isAssistancePage
+        ? "Ask KyroAI any questions..."
+        : isTeamChatPage
+          ? "Message or /ask to query AI..."
+          : "Type your message...";
 
   // Flatten and reverse to show oldest -> newest
   const messages = useMemo(() => {
-    console.log(
-      "Recomputing messages. data:",
-      data,
-      "isError:",
-      isError,
-      "error:",
-      error,
-    );
-    const list = data?.pages.flatMap((p) => p.results) ?? [];
-    // Ensure deterministic order oldest -> newest
+    const reactQueryList =
+      data?.pages?.flatMap((p) => {
+        if (Array.isArray(p?.results)) return p.results;
+        if (Array.isArray(p?.data?.results)) return p.data.results;
+        if (Array.isArray(p?.data)) return p.data;
+        if (Array.isArray(p?.messages)) return p.messages;
+        if (Array.isArray(p)) return p;
+        return [];
+      }) ?? [];
+
+    // Merge reactQueryList and directMessages, deduplicating by ID
+    const mergedMap = new Map();
+    [...directMessages, ...reactQueryList].forEach((msg, idx) => {
+      const key = msg?.id || `msg-${idx}`;
+      mergedMap.set(key, msg);
+    });
+
+    const list = Array.from(mergedMap.values());
+
     const sorted = [...list].sort(
-      (a, b) => new Date(a.created_at) - new Date(b.created_at),
+      (a, b) =>
+        new Date(a.created_at || a.timestamp || 0) -
+        new Date(b.created_at || b.timestamp || 0),
     );
-    console.log("Sorted messages:", sorted);
     return sorted;
-  }, [data]);
+  }, [data, directMessages]);
 
   // Anchor message id when navigating from notification
   const [anchorMessageId, setAnchorMessageId] = useState(null);
@@ -397,7 +499,7 @@ const ChatPanel = ({
             streamingMessageIdRef.current
           ) {
             console.log("AI stream chunk", streamData.chunk);
-            queryClient.setQueryData(["messages", userId, chatRoom], (old) => {
+            queryClient.setQueryData(["messages", normalizedChatRoom], (old) => {
               if (!old?.pages?.length) {
                 console.warn("Chunk: old cache has no pages", old);
                 return old;
@@ -421,7 +523,7 @@ const ChatPanel = ({
             const finalMessage = streamData.message;
             if (finalMessage) {
               queryClient.setQueryData(
-                ["messages", userId, chatRoom],
+                ["messages", normalizedChatRoom],
                 (old) => {
                   if (!old?.pages?.length) return old;
                   return {
@@ -601,7 +703,7 @@ const ChatPanel = ({
         }
       } finally {
         // Remove the optimistic message since the real one will arrive via WebSocket
-        queryClient.setQueryData(["messages", userId, chatRoom], (old) => {
+        queryClient.setQueryData(["messages", normalizedChatRoom], (old) => {
           if (!old?.pages?.length) return old;
           return {
             ...old,

@@ -77,10 +77,14 @@ const MessageBubble = memo(
     const isAssistanceMessage = path === "assistance";
     const isTeamMessage = path === "communication";
     const isAI = msg?.is_ai === true;
-    const isMe =
-      roomType === "ai"
-        ? !isAI // In AI chats, any non-AI message is from the user
-        : !isAI && Number(msg?.sender?.id) === Number(userId);
+    const isAiChatRoom =
+      roomType === "ai" ||
+      roomType === "ai_charting" ||
+      path === "charting-ai" ||
+      path === "assistance";
+    const isMe = isAiChatRoom
+      ? !isAI
+      : !isAI && Number(msg?.sender?.id) === Number(userId);
     const text = msg?.content || "";
     const isHighlighted =
       anchorMessageId !== null && msg.id === Number(anchorMessageId);
@@ -459,8 +463,8 @@ const MessageList = ({
   const [showScrollButton, setShowScrollButton] = useState(false);
   const lastScrollButtonStateRef = useRef(false);
   const isSelectingRef = useRef(false);
-  const isChartingAI = roomType === "ai_charting";
-  const isAssistanceAI = path === "assistance" && roomType === "ai";
+  const isChartingAI = roomType === "ai_charting" || path === "charting-ai";
+  const isAssistanceAI = path === "assistance" && (roomType === "ai" || !roomType);
   const isTeamChat = path === "communication";
 
   const uniqueMessages = useMemo(() => {
@@ -904,4 +908,4 @@ const MessageList = ({
   );
 };
 
-export default memo(MessageList);
+export default MessageList;
